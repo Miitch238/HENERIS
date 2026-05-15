@@ -1,0 +1,227 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+/* ── Root ── */
+.cl-root {
+  min-height: 100vh;
+  background: #ffffff;
+  font-family: 'Inter', sans-serif;
+  color: #1a1a1a;
+}
+
+/* ── Navbar ── */
+.cl-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 48px;
+  height: 64px;
+  background: #ffffff;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.cl-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #C9A84C;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+.cl-logo:hover { opacity: 0.8; }
+
+/* ── Right cluster ── */
+.cl-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-right: -4px;
+}
+
+/* ── Avatar ── */
+.cl-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #C9A84C;
+  color: #ffffff;
+  font-family: 'Playfair Display', serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: opacity 0.2s, box-shadow 0.2s;
+}
+.cl-avatar:hover {
+  opacity: 0.85;
+  box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.25);
+}
+
+/* ── Hamburger ── */
+.cl-hamburger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ── Drawer backdrop ── */
+.cl-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  background: rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.cl-drawer-backdrop--visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ── Drawer ── */
+.cl-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 120;
+  width: 300px;
+  height: 100vh;
+  background: #ffffff;
+  border-left: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: -8px 0 40px rgba(0, 0, 0, 0.1);
+}
+.cl-drawer--open {
+  transform: translateX(0);
+}
+
+/* ── Drawer header ── */
+.cl-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  height: 64px;
+  border-bottom: 1px solid #f0f0f0;
+  flex-shrink: 0;
+}
+
+.cl-drawer-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #C9A84C;
+  letter-spacing: 0.06em;
+}
+
+.cl-drawer-close {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.15s, color 0.15s;
+}
+.cl-drawer-close:hover { background: #f5f5f5; color: #1a1a1a; }
+
+/* ── Drawer links ── */
+.cl-drawer-links {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 0;
+  flex: 1;
+}
+
+.cl-drawer-link {
+  display: block;
+  padding: 14px 28px;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  border-left: 3px solid transparent;
+  transition: color 0.18s, border-color 0.18s, background 0.18s;
+}
+
+.cl-drawer-link:hover {
+  color: #C9A84C;
+  background: rgba(201, 168, 76, 0.04);
+}
+
+.cl-drawer-link--active {
+  color: #C9A84C;
+  border-left-color: #C9A84C;
+  background: rgba(201, 168, 76, 0.06);
+}
+
+/* ── Drawer footer (profil) ── */
+.cl-drawer-footer {
+  padding: 20px 28px;
+  border-top: 1px solid #f0f0f0;
+  flex-shrink: 0;
+}
+
+.cl-drawer-profil {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #1a1a1a;
+  transition: opacity 0.2s;
+}
+.cl-drawer-profil:hover { opacity: 0.7; }
+
+.cl-drawer-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #C9A84C;
+  color: #ffffff;
+  font-family: 'Playfair Display', serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cl-drawer-profil span:last-child {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #555;
+}
+
+/* ── Main ── */
+.cl-main { width: 100%; }
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .cl-nav { padding: 0 20px; }
+  .cl-drawer { width: 280px; }
+}

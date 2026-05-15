@@ -1,0 +1,116 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+.sl-root { min-height: 100vh; background: #fff; font-family: 'Inter', sans-serif; color: #1a1a1a; }
+
+.sl-nav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px; height: 64px;
+  background: #fff; border-bottom: 1px solid #f0f0f0;
+}
+
+.sl-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem; font-weight: 700; color: #C9A84C;
+  letter-spacing: 0.06em; text-decoration: none;
+}
+.sl-logo:hover { opacity: 0.8; }
+
+.sl-right { display: flex; align-items: center; gap: 12px; margin-right: -4px; }
+
+.sl-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: #1a1a1a; color: #C9A84C;
+  font-family: 'Playfair Display', serif; font-size: 0.85rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  text-decoration: none; flex-shrink: 0;
+  transition: opacity 0.2s, box-shadow 0.2s;
+}
+.sl-avatar:hover { opacity: 0.85; box-shadow: 0 0 0 3px rgba(26,26,26,0.15); }
+
+.sl-hamburger {
+  display: flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; padding: 0;
+  background: none; border: none; cursor: pointer; flex-shrink: 0;
+}
+
+.sl-backdrop {
+  position: fixed; inset: 0; z-index: 110;
+  background: rgba(0,0,0,0.35); opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.sl-backdrop--visible { opacity: 1; pointer-events: all; }
+
+.sl-drawer {
+  position: fixed; top: 0; right: 0; z-index: 120;
+  width: 300px; height: 100vh; background: #fff;
+  border-left: 1px solid #f0f0f0;
+  display: flex; flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: -8px 0 40px rgba(0,0,0,0.1);
+}
+.sl-drawer--open { transform: translateX(0); }
+
+.sl-drawer-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px; height: 64px;
+  border-bottom: 1px solid #f0f0f0; flex-shrink: 0;
+}
+
+.sl-drawer-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem; font-weight: 700; color: #C9A84C; letter-spacing: 0.06em;
+}
+
+.sl-drawer-close {
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  background: none; border: none; color: #999; cursor: pointer; border-radius: 4px;
+  transition: background 0.15s, color 0.15s;
+}
+.sl-drawer-close:hover { background: #f5f5f5; color: #1a1a1a; }
+
+.sl-drawer-badge {
+  margin: 16px 28px 0;
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+  color: #1a1a1a; background: rgba(26,26,26,0.06);
+  border: 1px solid rgba(26,26,26,0.12); padding: 3px 10px; border-radius: 99px;
+  display: inline-block;
+}
+
+.sl-drawer-links { display: flex; flex-direction: column; padding: 16px 0; flex: 1; }
+
+.sl-drawer-link {
+  display: block; padding: 14px 28px;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem; font-weight: 600; color: #1a1a1a;
+  text-decoration: none; letter-spacing: 0.02em;
+  border-left: 3px solid transparent;
+  transition: color 0.18s, border-color 0.18s, background 0.18s;
+}
+.sl-drawer-link:hover { color: #C9A84C; background: rgba(201,168,76,0.04); }
+.sl-drawer-link--active { color: #C9A84C; border-left-color: #C9A84C; background: rgba(201,168,76,0.06); }
+
+.sl-drawer-footer { padding: 20px 28px; border-top: 1px solid #f0f0f0; flex-shrink: 0; }
+
+.sl-drawer-profil {
+  display: flex; align-items: center; gap: 12px;
+  text-decoration: none; color: #1a1a1a; transition: opacity 0.2s;
+}
+.sl-drawer-profil:hover { opacity: 0.7; }
+
+.sl-drawer-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: #1a1a1a; color: #C9A84C;
+  font-family: 'Playfair Display', serif; font-size: 0.85rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+
+.sl-drawer-profil span:last-child { font-size: 0.875rem; font-weight: 500; color: #555; }
+
+.sl-main { width: 100%; }
+
+@media (max-width: 640px) {
+  .sl-nav { padding: 0 20px; }
+  .sl-drawer { width: 280px; }
+}
