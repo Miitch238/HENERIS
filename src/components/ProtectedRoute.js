@@ -9,12 +9,11 @@ const ROLE_ROUTES = {
 };
 
 export default function ProtectedRoute({ children, requiredRole }) {
-  const [status, setStatus]     = useState('loading');
+  const [status, setStatus]         = useState('loading');
   const [redirectTo, setRedirectTo] = useState('/login');
 
   useEffect(() => {
     const check = async () => {
-      // 1. Vérifier la session active
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
       if (sessionError) {
@@ -31,13 +30,11 @@ export default function ProtectedRoute({ children, requiredRole }) {
 
       console.log('[ProtectedRoute] Session OK — user.id :', session.user.id);
 
-      // Pas de rôle requis → accès libre si connecté
       if (!requiredRole) {
         setStatus('authorized');
         return;
       }
 
-      // Bypass admin immédiat via user_metadata (avant toute requête DB)
       const metaRole = session.user.user_metadata?.role;
       if (metaRole === 'admin') {
         console.log('[ProtectedRoute] Admin détecté via user_metadata — accès total');
@@ -45,7 +42,6 @@ export default function ProtectedRoute({ children, requiredRole }) {
         return;
       }
 
-      // 2. Lire le profil via user_id
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('role')
@@ -65,7 +61,6 @@ export default function ProtectedRoute({ children, requiredRole }) {
 
       console.log('[ProtectedRoute] Profil trouvé — role :', profile?.role, '| requis :', requiredRole);
 
-      // Admin via table profiles — accès total
       if (profile?.role === 'admin') {
         setStatus('authorized');
         return;
@@ -92,12 +87,13 @@ export default function ProtectedRoute({ children, requiredRole }) {
       background: '#fff',
     }}>
       <span style={{
-        fontFamily: "'Playfair Display', serif",
-        fontSize: '1.5rem',
-        color: '#C9A84C',
-        letterSpacing: '0.06em',
+        fontFamily: "'Playfair Display', Georgia, serif",
+        fontSize: '2rem',
+        fontWeight: '900',
+        color: '#111111',
+        letterSpacing: '0.05em',
       }}>
-        Heneris
+        HENERIS<span style={{ color: '#C9A84C' }}>.</span>
       </span>
     </div>
   );

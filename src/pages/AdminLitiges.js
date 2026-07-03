@@ -12,7 +12,7 @@ const MOCK = [
 ];
 
 const ST = { ouvert: 'ap-badge--red', 'en cours': 'ap-badge--yellow', résolu: 'ap-badge--green' };
-const COLS = '90px minmax(130px,1fr) minmax(130px,1fr) minmax(200px,2fr) 110px 90px 90px';
+const COLS = '90px minmax(120px,1fr) minmax(120px,1fr) 110px minmax(180px,2fr) 90px 80px 90px';
 
 export default function AdminLitiges() {
   const [user, setUser]     = useState(null);
@@ -61,21 +61,31 @@ export default function AdminLitiges() {
             <span>ID</span>
             <span>Client</span>
             <span>Shopper</span>
-            <span>Motif</span>
             <span>Montant bloqué</span>
+            <span>Motif</span>
             <span>Statut</span>
             <span>Date</span>
+            <span>Action</span>
           </div>
           {litiges.map(l => (
             <div className="ap-table-row" style={{ gridTemplateColumns: COLS }} key={l.id}>
               <span style={{ fontFamily: 'monospace', fontSize: '0.72rem', color: '#aaa' }}>{l.id}</span>
               <span style={{ fontWeight: 600, color: '#1a1a1a' }}>{l.client}</span>
               <span style={{ fontSize: '0.82rem', color: '#555' }}>{l.shopper}</span>
-              <span style={{ fontSize: '0.8rem', color: '#555', lineHeight: 1.4 }}>{l.motif}</span>
               <span style={{ fontWeight: 700 }}>{l.montant.toLocaleString('fr-FR')} €</span>
+              <span style={{ fontSize: '0.8rem', color: '#555', lineHeight: 1.4 }}>{l.motif}</span>
               <span><span className={`ap-badge ${ST[l.statut]}`}>{l.statut}</span></span>
               <span style={{ fontSize: '0.75rem', color: '#bbb' }}>
                 {new Date(l.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}
+              </span>
+              <span>
+                <button
+                  className="ap-action-btn"
+                  style={{ padding: '4px 12px', fontSize: '0.75rem', borderRadius: 6, border: '1px solid #C9A84C', color: '#C9A84C', background: 'rgba(201,168,76,0.06)', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                  onClick={() => alert(`Traitement du litige ${l.id}`)}
+                >
+                  Traiter
+                </button>
               </span>
             </div>
           ))}

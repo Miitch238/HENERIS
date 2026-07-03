@@ -3,95 +3,187 @@ import { supabase } from '../supabaseClient';
 import ShopperLayout from '../components/ShopperLayout';
 import '../pages/Messages.css';
 
-const MOCK_CONV = [
-  { id: 1, client: { nom: 'Marie D.' }, dernierMessage: 'Super, j\'attends votre confirmation.', heure: '11:05', nonLus: 1 },
-  { id: 2, client: { nom: 'Alexandre S.' }, dernierMessage: 'Avez-vous la boîte d\'origine ?', heure: 'Hier', nonLus: 0 },
-  { id: 3, client: { nom: 'Isabelle M.' }, dernierMessage: 'Parfait, merci beaucoup !', heure: 'Lun.', nonLus: 0 },
-];
-const MOCK_MSG = {
-  1: [
-    { id: 1, sender: 'client',  contenu: 'Bonjour, j\'ai vu votre proposition pour la Birkin.', heure: '10:40' },
-    { id: 2, sender: 'shopper', contenu: 'Bonjour Marie, oui la pièce est disponible avec boîte et papiers complets.', heure: '10:50' },
-    { id: 3, sender: 'client',  contenu: 'Super, j\'attends votre confirmation.', heure: '11:05' },
-  ],
-  2: [
-    { id: 1, sender: 'shopper', contenu: 'Bonjour Alexandre, la Datejust est en excellent état.', heure: 'Hier 09:00' },
-    { id: 2, sender: 'client',  contenu: 'Avez-vous la boîte d\'origine ?', heure: 'Hier 09:30' },
-  ],
-  3: [
-    { id: 1, sender: 'client',  contenu: 'La livraison est prévue pour quand ?', heure: 'Lun. 14:00' },
-    { id: 2, sender: 'shopper', contenu: 'Sous 48h ouvrées.', heure: 'Lun. 14:20' },
-    { id: 3, sender: 'client',  contenu: 'Parfait, merci beaucoup !', heure: 'Lun. 14:22' },
-  ],
-};
-
 export default function ShopperMessages() {
-  const [user, setUser]       = useState(null);
-  const [activeConv, setActive] = useState(MOCK_CONV[0]);
-  const [messages, setMessages] = useState(MOCK_MSG[1]);
-  const [input, setInput]     = useState('');
-  const bottomRef             = useRef(null);
+  const [user, setUser]             = useState(null);
+  const [conversations, setConvs]   = useState([]);
+  const [activeConv, setActiveConv] = useState(null);
+  const [messages, setMessages]     = useState([]);
+  const [input, setInput]           = useState('');
+  const [loading, setLoading]       = useState(true);
+  const bottomRef                   = useRef(null);
 
-  useEffect(() => { supabase.auth.getUser().then(({ data }) => setUser(data.user)); }, []);
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
+  useEffect(() => {
+    supabase.auth.getUser().then(async ({ data }) => {
+      const u = data.user;
+      setUser(u);
+      if (!u) return;
+      await chargerConversations(u.id);
+      setLoading(false);
+    });
+  }, []);
 
-  const selectConv = c => { setActive(c); setMessages(MOCK_MSG[c.id] || []); };
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
-  const send = e => {
+  useEffect(() => {
+    if (!activeConv) return;
+    const channel = supabase
+      .channel(`shopper-messages-${activeConv.id}`)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages',
+        filter: `conversation_id=eq.${activeConv.id}`,
+      }, payload => {
+        setMessages(prev => [...prev, payload.new]);
+      })
+      .subscribe();
+    return () => supabase.removeChannel(channel);
+  }, [activeConv]);
+
+  async function chargerConversations(userId) {
+    const { data } = await supabase
+      .from('conversations')
+      .select(`*, client:client_id ( id, email ), client_profile:client_id ( prenom, nom ), messages ( contenu, created_at )`)
+      .eq('shopper_id', userId)
+      .order('created_at', { ascending: false });
+
+    setConvs(data || []);
+    if (data?.length > 0) {
+      setActiveConv(data[0]);
+      await chargerMessages(data[0].id);
+    }
+  }
+
+  async function chargerMessages(convId) {
+    const { data } = await supabase
+      .from('messages')
+      .select('*')
+      .eq('conversation_id', convId)
+      .order('created_at', { ascending: true });
+
+    setMessages(data || []);
+
+    await supabase
+      .from('messages')
+      .update({ lu: true })
+      .eq('conversation_id', convId)
+      .eq('lu', false);
+  }
+
+  async function selectConv(conv) {
+    setActiveConv(conv);
+    await chargerMessages(conv.id);
+  }
+
+  async function send(e) {
     e.preventDefault();
-    if (!input.trim()) return;
-    setMessages(p => [...p, { id: Date.now(), sender: 'shopper', contenu: input.trim(), heure: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) }]);
+    if (!input.trim() || !user || !activeConv) return;
+    const contenu = input.trim();
     setInput('');
+    await supabase.from('messages').insert({
+      conversation_id: activeConv.id,
+      sender_id: user.id,
+      contenu,
+    });
+  }
+
+  const getNom = (conv) => {
+    const prenom = conv.client_profile?.prenom;
+    const nom = conv.client_profile?.nom;
+    if (prenom) return `${prenom} ${nom || ''}`.trim();
+    return conv.client?.email?.split('@')[0] || 'Client';
   };
 
   return (
     <ShopperLayout user={user}>
       <div className="msg-page">
         <aside className="msg-sidebar">
-          <div className="msg-sidebar-header"><h2 className="msg-sidebar-title">Messages</h2></div>
+          <div className="msg-sidebar-header">
+            <h2 className="msg-sidebar-title">Messages</h2>
+          </div>
           <div className="msg-conv-list">
-            {MOCK_CONV.map(c => (
-              <button key={c.id} className={`msg-conv-item ${activeConv.id === c.id ? 'active' : ''}`} onClick={() => selectConv(c)}>
-                <div className="msg-conv-avatar" style={{ background: '#1a1a1a', color: '#C9A84C' }}>{c.client.nom.charAt(0)}</div>
-                <div className="msg-conv-info">
-                  <div className="msg-conv-top">
-                    <span className="msg-conv-name">{c.client.nom}</span>
-                    <span className="msg-conv-time">{c.heure}</span>
+            {loading ? (
+              <p style={{ padding: 20, color: '#aaa', fontSize: '0.85rem' }}>Chargement…</p>
+            ) : conversations.length === 0 ? (
+              <p style={{ padding: 20, color: '#aaa', fontSize: '0.85rem' }}>Aucune conversation.</p>
+            ) : (
+              conversations.map(conv => (
+                <button
+                  key={conv.id}
+                  className={`msg-conv-item ${activeConv?.id === conv.id ? 'active' : ''}`}
+                  onClick={() => selectConv(conv)}
+                >
+                  <div className="msg-conv-avatar" style={{ background: '#1a1a1a', color: '#C9A84C' }}>
+                    {getNom(conv).charAt(0).toUpperCase()}
                   </div>
-                  <div className="msg-conv-bottom">
-                    <span className="msg-conv-last">{c.dernierMessage}</span>
-                    {c.nonLus > 0 && <span className="msg-unread-badge">{c.nonLus}</span>}
+                  <div className="msg-conv-info">
+                    <div className="msg-conv-top">
+                      <span className="msg-conv-name">{getNom(conv)}</span>
+                      <span className="msg-conv-time">
+                        {new Date(conv.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}
+                      </span>
+                    </div>
+                    <div className="msg-conv-bottom">
+                      <span className="msg-conv-last">
+                        {conv.messages?.[conv.messages.length - 1]?.contenu || 'Nouvelle conversation'}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </button>
-            ))}
+                </button>
+              ))
+            )}
           </div>
         </aside>
+
         <div className="msg-chat">
-          <div className="msg-chat-header">
-            <div className="msg-chat-avatar" style={{ background: '#1a1a1a', color: '#C9A84C' }}>{activeConv.client.nom.charAt(0)}</div>
-            <div>
-              <p className="msg-chat-name">{activeConv.client.nom}</p>
-              <p className="msg-chat-spec">Client</p>
-            </div>
-          </div>
-          <div className="msg-body">
-            {messages.map(m => (
-              <div key={m.id} className={`msg-bubble-wrap ${m.sender === 'shopper' ? 'msg-mine' : 'msg-theirs'}`}>
-                <div className="msg-bubble">
-                  <p>{m.contenu}</p>
-                  <span className="msg-time">{m.heure}</span>
+          {!activeConv ? (
+            <div className="msg-empty">Sélectionnez une conversation.</div>
+          ) : (
+            <>
+              <div className="msg-chat-header">
+                <div className="msg-chat-avatar" style={{ background: '#1a1a1a', color: '#C9A84C' }}>
+                  {getNom(activeConv).charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <p className="msg-chat-name">{getNom(activeConv)}</p>
+                  <p className="msg-chat-spec">Client</p>
                 </div>
               </div>
-            ))}
-            <div ref={bottomRef} />
-          </div>
-          <form className="msg-input-bar" onSubmit={send}>
-            <input type="text" className="msg-input" placeholder="Écrire un message…" value={input} onChange={e => setInput(e.target.value)} autoComplete="off" />
-            <button type="submit" className="msg-send-btn" style={{ background: '#1a1a1a', color: '#C9A84C' }} disabled={!input.trim()}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            </button>
-          </form>
+
+              <div className="msg-body">
+                {messages.map(m => (
+                  <div key={m.id} className={`msg-bubble-wrap ${m.sender_id === user?.id ? 'msg-mine' : 'msg-theirs'}`}>
+                    <div className="msg-bubble">
+                      <p>{m.contenu}</p>
+                      <span className="msg-time">
+                        {new Date(m.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+                <div ref={bottomRef} />
+              </div>
+
+              <form className="msg-input-bar" onSubmit={send}>
+                <input
+                  type="text"
+                  className="msg-input"
+                  placeholder="Écrire un message…"
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  autoComplete="off"
+                />
+                <button type="submit" className="msg-send-btn" style={{ background: '#1a1a1a', color: '#C9A84C' }} disabled={!input.trim()}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="22" y1="2" x2="11" y2="13"/>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                  </svg>
+                </button>
+              </form>
+            </>
+          )}
         </div>
       </div>
     </ShopperLayout>

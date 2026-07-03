@@ -1,0 +1,25 @@
+.hn-logo-link { text-decoration: none; display: inline-flex; align-items: center; }
+
+.hn-logo {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  display: inline-flex;
+  align-items: baseline;
+  font-style: normal;
+}
+
+.hn-logo--dark  { color: #111111; }
+.hn-logo--light { color: #ffffff; }
+
+.hn-logo-dot {
+  color: #C9A84C !important;
+  margin-left: 0.02em;
+}
+
+.hn-logo--xs { font-size: 0.85rem; }
+.hn-logo--sm { font-size: 1.2rem;  }
+.hn-logo--md { font-size: 1.6rem;  }
+.hn-logo--lg { font-size: 2.2rem;  }
+.hn-logo--xl { font-size: 4rem;    }

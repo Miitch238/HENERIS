@@ -1,118 +1,122 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import ShopperLayout from '../components/ShopperLayout';
-import '../styles/shopper.css';
-import './ShopperGains.css';
+import ShopperLayout, { palette } from '../components/ShopperLayout';
 
-const MOCK_PAIEMENTS = [
-  { id: 'PAY-001', article: 'Hermès Birkin 30 Noir',   client: 'Marie D.',     montant: 10350, statut: 'versé',    date: '2026-04-28' },
-  { id: 'PAY-002', article: 'Chanel Classic Flap',      client: 'Aline R.',     montant: 8460,  statut: 'versé',    date: '2026-04-01' },
-  { id: 'PAY-003', article: 'Collier Cartier Love',     client: 'Isabelle M.',  montant: 4230,  statut: 'en escrow', date: '2026-05-12' },
-  { id: 'PAY-004', article: 'Rolex Datejust 36mm',      client: 'Alexandre S.', montant: 8010,  statut: 'en escrow', date: '2026-05-10' },
-  { id: 'PAY-005', article: 'Zegna Couture Veste',      client: 'Thomas B.',    montant: 2880,  statut: 'remboursé', date: '2026-04-15' },
-];
+const serif = "'Cormorant Garamond', Georgia, serif";
+const sans  = "'Montserrat', sans-serif";
+const { cardBg, ink, inkSoft, hairline, gold } = palette;
 
-const ST = {
-  'versé':     { cls: 'sg-badge--green',  label: 'Versé' },
-  'en escrow': { cls: 'sg-badge--blue',   label: 'En escrow' },
-  'remboursé': { cls: 'sg-badge--grey',   label: 'Remboursé' },
+/* Schéma Supabase réel (vérifié) :
+   demandes : id, description, statut ('terminee'), categorie, created_at
+   Pas de colonnes titre/montant_final/updated_at/date_versement actuellement —
+   les montants resteront à 0 tant que Mitch n'aura pas ajouté le suivi
+   financier (montant final accepté + date de virement) côté base. */
+
+const KpiCard = ({ label, value, suffix, accent }) => (
+  <div style={{ background: cardBg, border: `1px solid ${hairline}`, borderTop: accent ? `2px solid ${gold}` : `1px solid ${hairline}`, padding: '26px 24px', flex: 1, minWidth: '200px' }}>
+    <p style={{ fontFamily: sans, fontSize: '9px', letterSpacing: '.16em', textTransform: 'uppercase', color: inkSoft, marginBottom: '14px' }}>{label}</p>
+    <p style={{ fontFamily: serif, fontSize: '2.1rem', fontWeight: 300, fontStyle: 'italic', color: accent ? gold : ink, lineHeight: 1 }}>
+      {value}{suffix && <span style={{ fontFamily: sans, fontSize: '.85rem', fontStyle: 'normal', color: inkSoft, marginLeft: '5px' }}>{suffix}</span>}
+    </p>
+  </div>
+);
+
+const nextPayoutDate = () => {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth() + (now.getDate() >= 5 ? 1 : 0), 5);
 };
 
 export default function ShopperGains() {
-  const [user, setUser] = useState(null);
-  const [filter, setFilter] = useState('tous');
+  const [loading, setLoading] = useState(true);
+  const [missions, setMissions] = useState([]);
 
-  useEffect(() => { supabase.auth.getUser().then(({ data }) => setUser(data.user)); }, []);
+  useEffect(() => {
+    const load = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { setLoading(false); return; }
+      try {
+        const { data, error } = await supabase
+          .from('demandes')
+          .select('*')
+          .eq('shopper_id', session.user.id)
+          .eq('statut', 'terminee')
+          .order('created_at', { ascending: false });
+        if (error) throw error;
+        setMissions(data || []);
+      } catch (err) {
+        console.error('Erreur chargement des gains :', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
 
-  const paiements = filter === 'tous' ? MOCK_PAIEMENTS : MOCK_PAIEMENTS.filter(p => p.statut === filter);
-  const totalVersé  = MOCK_PAIEMENTS.filter(p => p.statut === 'versé').reduce((a, p) => a + p.montant, 0);
-  const totalEscrow = MOCK_PAIEMENTS.filter(p => p.statut === 'en escrow').reduce((a, p) => a + p.montant, 0);
-  const totalBrut   = MOCK_PAIEMENTS.reduce((a, p) => a + p.montant, 0);
+  const now = new Date();
+  const revenusMois = missions.filter(m => {
+    const dt = m.created_at ? new Date(m.created_at) : null;
+    return dt && dt.getMonth() === now.getMonth() && dt.getFullYear() === now.getFullYear();
+  }).reduce((s, m) => s + (Number(m.montant_final) || 0), 0);
+
+  const revenusTotal = missions.reduce((s, m) => s + (Number(m.montant_final) || 0), 0);
+  const enAttente = missions.filter(m => !m.date_versement).reduce((s, m) => s + (Number(m.montant_final) || 0), 0);
 
   return (
-    <ShopperLayout user={user}>
-      <div className="sp-page">
-        <div className="sp-header">
-          <div>
-            <p className="sp-eyebrow">Shopper</p>
-            <h1 className="sp-title">Mes gains</h1>
-            <p className="sp-subtitle">Paiements Stripe Connect — commission Hénéris déjà déduite (10%)</p>
+    <ShopperLayout fullWidth>
+      <div style={{ maxWidth: '1160px', margin: '0 auto' }}>
+        <h1 style={{ fontFamily: serif, fontSize: '2.2rem', fontWeight: 300, fontStyle: 'italic', color: ink, marginBottom: '8px' }}>Mes gains</h1>
+        <p style={{ fontFamily: sans, fontSize: '13px', color: inkSoft }}>Revenus, historique de paiements et prochain virement.</p>
+        <div style={{ width: '36px', height: '1px', background: gold, margin: '20px 0 28px' }} />
+
+        <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '32px' }}>
+          <KpiCard label="Revenus ce mois" value={loading ? '—' : revenusMois.toLocaleString('fr-FR')} suffix="€" accent />
+          <KpiCard label="Revenus cumulés" value={loading ? '—' : revenusTotal.toLocaleString('fr-FR')} suffix="€" />
+          <KpiCard label="En attente de virement" value={loading ? '—' : enAttente.toLocaleString('fr-FR')} suffix="€" />
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '36px' }}>
+          <div style={{ background: cardBg, border: `1px solid ${hairline}`, padding: '24px 26px' }}>
+            <p style={{ fontFamily: sans, fontSize: '9px', letterSpacing: '.18em', textTransform: 'uppercase', color: inkSoft, marginBottom: '10px' }}>Prochain virement</p>
+            <p style={{ fontFamily: serif, fontSize: '1.4rem', fontStyle: 'italic', color: ink }}>
+              {nextPayoutDate().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+            </p>
+            <p style={{ fontFamily: sans, fontSize: '11px', color: inkSoft, marginTop: '6px' }}>
+              Estimation : {enAttente.toLocaleString('fr-FR')} € sur vos missions terminées non encore versées.
+            </p>
+          </div>
+          <div style={{ background: cardBg, border: `1px solid ${hairline}`, padding: '24px 26px' }}>
+            <p style={{ fontFamily: sans, fontSize: '9px', letterSpacing: '.18em', textTransform: 'uppercase', color: inkSoft, marginBottom: '10px' }}>Commission</p>
+            <p style={{ fontFamily: serif, fontSize: '1.4rem', fontStyle: 'italic', color: gold }}>Vous conservez 100%</p>
+            <p style={{ fontFamily: sans, fontSize: '11px', color: inkSoft, marginTop: '6px' }}>
+              Heneris prélève 10% côté client au moment de la commande. Ce montant n'est jamais déduit de vos gains.
+            </p>
           </div>
         </div>
 
-        {/* Cartes récap */}
-        <div className="sg-cards">
-          <div className="sg-card">
-            <p className="sg-card-label">Total versé</p>
-            <p className="sg-card-value sg-card-value--green">{totalVersé.toLocaleString('fr-FR')} €</p>
-            <p className="sg-card-sub">Sur votre compte Stripe</p>
-          </div>
-          <div className="sg-card">
-            <p className="sg-card-label">En escrow</p>
-            <p className="sg-card-value sg-card-value--blue">{totalEscrow.toLocaleString('fr-FR')} €</p>
-            <p className="sg-card-sub">En attente de confirmation</p>
-          </div>
-          <div className="sg-card">
-            <p className="sg-card-label">Volume total (net)</p>
-            <p className="sg-card-value">{totalBrut.toLocaleString('fr-FR')} €</p>
-            <p className="sg-card-sub">Hors remboursements</p>
-          </div>
-        </div>
-
-        {/* Infos Stripe */}
-        <div className="sg-stripe-block">
-          <div className="sg-stripe-left">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="1.8"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-            <div>
-              <p className="sg-stripe-title">Compte Stripe Connect</p>
-              <p className="sg-stripe-sub">Les virements sont effectués automatiquement après confirmation de livraison par le client.</p>
+        <div>
+          <p style={{ fontFamily: sans, fontSize: '9px', letterSpacing: '.2em', textTransform: 'uppercase', color: inkSoft, marginBottom: '14px' }}>Historique</p>
+          {loading ? (
+            <p style={{ fontFamily: serif, fontStyle: 'italic', color: inkSoft }}>Chargement…</p>
+          ) : missions.length === 0 ? (
+            <div style={{ background: cardBg, border: `1px solid ${hairline}`, padding: '40px', textAlign: 'center' }}>
+              <p style={{ fontFamily: serif, fontStyle: 'italic', color: inkSoft }}>Aucune mission terminée pour le moment.</p>
             </div>
-          </div>
-          <button className="sg-stripe-btn">Voir mon tableau Stripe →</button>
-        </div>
-
-        {/* Filtres */}
-        <div className="sg-filters">
-          {['tous', 'versé', 'en escrow', 'remboursé'].map(f => (
-            <button
-              key={f}
-              className={`sg-filter-btn ${filter === f ? 'sg-filter-btn--active' : ''}`}
-              onClick={() => setFilter(f)}
-            >
-              {f.charAt(0).toUpperCase() + f.slice(1)}
-            </button>
-          ))}
-        </div>
-
-        {/* Tableau */}
-        {paiements.length === 0 ? (
-          <div className="sp-empty">Aucun paiement pour ce filtre.</div>
-        ) : (
-          <div className="sg-table">
-            <div className="sg-table-head">
-              <span>ID</span>
-              <span>Article</span>
-              <span>Client</span>
-              <span>Montant net</span>
-              <span>Statut</span>
-              <span>Date</span>
-            </div>
-            {paiements.map(p => (
-              <div className="sg-table-row" key={p.id}>
-                <span className="sg-id">{p.id}</span>
-                <span className="sg-article">{p.article}</span>
-                <span className="sg-client">{p.client}</span>
-                <span className="sg-montant">{p.montant.toLocaleString('fr-FR')} €</span>
-                <span>
-                  <span className={`sg-badge ${ST[p.statut].cls}`}>{ST[p.statut].label}</span>
-                </span>
-                <span className="sg-date">
-                  {new Date(p.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })}
-                </span>
+          ) : (
+            <div style={{ background: cardBg, border: `1px solid ${hairline}` }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 140px 120px 130px', padding: '14px 24px', borderBottom: `1px solid ${hairline}`, fontFamily: sans, fontSize: '9px', letterSpacing: '.1em', textTransform: 'uppercase', color: inkSoft }}>
+                <span>Mission</span><span>Date</span><span>Montant</span><span>Statut</span>
               </div>
-            ))}
-          </div>
-        )}
+              {missions.map(m => (
+                <div key={m.id} style={{ display: 'grid', gridTemplateColumns: '1fr 140px 120px 130px', padding: '16px 24px', borderBottom: `1px solid ${hairline}`, alignItems: 'center' }}>
+                  <span style={{ fontFamily: serif, fontSize: '1rem', color: ink }}>{m.description ? m.description.slice(0, 40) : 'Mission'}</span>
+                  <span style={{ fontFamily: sans, fontSize: '11px', color: inkSoft }}>{m.created_at ? new Date(m.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) : '—'}</span>
+                  <span style={{ fontFamily: sans, fontSize: '12px', fontWeight: 500, color: ink }}>{m.montant_final ? `${m.montant_final} €` : '—'}</span>
+                  <span style={{ fontFamily: sans, fontSize: '9px', letterSpacing: '.08em', textTransform: 'uppercase', color: m.date_versement ? '#3E7A56' : '#B58A2E' }}>{m.date_versement ? 'Versé' : 'En attente'}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </ShopperLayout>
   );
