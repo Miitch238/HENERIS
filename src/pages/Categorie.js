@@ -3,9 +3,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import Logo from '../components/Logo';
 import Footer from '../components/Footer';
+import { serif, sans, COLORS } from '../theme';
 
-const serif = "'Cormorant Garamond', Georgia, serif";
-const sans  = "'Montserrat', sans-serif";
 
 const CATEGORIES_BAR = [
   'Tout', 'Maroquinerie', 'Horlogerie', 'Joaillerie', 'Mode', 'Chaussures', 'Accessoires', 'Vintage', 'Collection', 'Art de vivre',
@@ -256,38 +255,38 @@ export default function Categorie() {
     { label: 'Mes gains',  to: '/shopper/gains' },
   ] : [];
 
-  const navTop  = navVisible ? '0px' : '-60px';
-  const catsTop = navVisible ? '60px' : '0px';
+  const navTop  = navVisible ? '0px' : '-70px';
+  const catsTop = navVisible ? '70px' : '0px';
 
   return (
     <div style={{ background: '#fff', minHeight: '100vh', fontFamily: sans }}>
 
-      <header style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', padding: '0 32px', height: '60px', background: '#fff', position: 'fixed', top: navTop, left: 0, right: 0, zIndex: 1000, transition: 'top .3s cubic-bezier(.4,0,.2,1)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
-          <button onClick={() => setMenuOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '9px', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <span style={{ display: 'block', width: '18px', height: '1px', background: '#1a1a1a' }} />
-              <span style={{ display: 'block', width: '18px', height: '1px', background: '#1a1a1a' }} />
-              <span style={{ display: 'block', width: '18px', height: '1px', background: '#1a1a1a' }} />
-            </div>
-            <span style={{ fontSize: '8px', letterSpacing: '.16em', textTransform: 'uppercase', color: '#1a1a1a', fontFamily: sans }}>Menu</span>
+      <header style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', padding: '0 40px', height: '70px', background: '#fff', position: 'fixed', top: navTop, left: 0, right: 0, zIndex: 1000, transition: 'top .3s cubic-bezier(.4,0,.2,1)' }}>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <button onClick={() => setMenuOpen(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: COLORS.black, display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            <span style={{ fontFamily: sans, fontSize: '9px', letterSpacing: '.14em', textTransform: 'uppercase', color: '#999', fontWeight: 300 }}>Menu</span>
           </button>
         </div>
         <Logo to="/" color="dark" size="md" />
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '20px' }}>
           <Link to={role === 'client' ? '/deposer-demande' : '/login'}
-            style={{ fontFamily: sans, fontSize: '9px', letterSpacing: '.16em', textTransform: 'uppercase', color: '#fff', background: '#1a1a1a', padding: '9px 18px', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'background .2s' }}
-            onMouseEnter={e => e.currentTarget.style.background = '#C9A84C'}
-            onMouseLeave={e => e.currentTarget.style.background = '#1a1a1a'}
+            style={{ fontFamily: sans, fontSize: '9px', letterSpacing: '.16em', textTransform: 'uppercase', color: '#fff', background: COLORS.gold, padding: '9px 18px', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'background .2s' }}
+            onMouseEnter={e => e.currentTarget.style.background = COLORS.black}
+            onMouseLeave={e => e.currentTarget.style.background = COLORS.gold}
           >Faire une demande</Link>
-          <a href="/#/messages" style={{ color: '#1a1a1a', display: 'flex', alignItems: 'center', padding: '4px', textDecoration: 'none' }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg></a>
-          <a href="/#/notifications" style={{ color: '#1a1a1a', display: 'flex', alignItems: 'center', padding: '4px', textDecoration: 'none' }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg></a>
-          <a href="/#/favoris" style={{ color: '#1a1a1a', display: 'flex', alignItems: 'center', padding: '4px', textDecoration: 'none' }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg></a>
+          {role && (
+            <>
+              <a href="/#/messages" style={{ color: COLORS.black, display: 'flex', alignItems: 'center', padding: '4px', textDecoration: 'none' }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg></a>
+              <a href="/#/notifications" style={{ color: COLORS.black, display: 'flex', alignItems: 'center', padding: '4px', textDecoration: 'none' }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg></a>
+              <a href="/#/favoris" style={{ color: COLORS.black, display: 'flex', alignItems: 'center', padding: '4px', textDecoration: 'none' }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg></a>
+            </>
+          )}
           <div ref={profileRef} style={{ position: 'relative' }}>
             <button onClick={() => initials ? setProfileOpen(v => !v) : window.location.href = '/#/login'}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', color: '#1a1a1a' }}>
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', color: COLORS.black }}>
               {initials ? (
-                <span style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#1a1a1a', color: '#C9A84C', fontSize: '10px', fontWeight: '600', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: sans }}>{initials}</span>
+                <span style={{ width: '28px', height: '28px', borderRadius: '50%', background: COLORS.black, color: COLORS.gold, fontSize: '10px', fontWeight: '600', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: sans }}>{initials}</span>
               ) : (
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
               )}
@@ -295,13 +294,13 @@ export default function Categorie() {
             {profileOpen && initials && (
               <div style={{ position: 'absolute', top: '48px', right: 0, width: '240px', background: '#fff', border: '.5px solid #ececec', boxShadow: '0 8px 32px rgba(0,0,0,.08)', zIndex: 200 }}>
                 <div style={{ padding: '16px 20px', borderBottom: '.5px solid #ececec' }}>
-                  <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: '500', color: '#1a1a1a', marginBottom: '2px' }}>{firstName} {lastName}</p>
+                  <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: '500', color: COLORS.black, marginBottom: '2px' }}>{firstName} {lastName}</p>
                   <p style={{ fontFamily: sans, fontSize: '10px', color: '#aaa', fontWeight: '300' }}>{user?.email}</p>
                 </div>
                 <div style={{ padding: '8px 0' }}>
                   {menuItems.map(({ label, to }) => (
                     <a key={label} href={`/#${to}`} onClick={() => setProfileOpen(false)}
-                      style={{ display: 'block', padding: '11px 20px', fontFamily: sans, fontSize: '12px', fontWeight: '300', color: '#1a1a1a', textDecoration: 'none' }}
+                      style={{ display: 'block', padding: '11px 20px', fontFamily: sans, fontSize: '12px', fontWeight: '300', color: COLORS.black, textDecoration: 'none' }}
                       onMouseEnter={e => e.currentTarget.style.background = '#fafaf8'}
                       onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                     >{label}</a>
@@ -318,27 +317,26 @@ export default function Categorie() {
         </div>
       </header>
 
-      {menuOpen && <div onClick={() => setMenuOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 299, background: 'rgba(0,0,0,.3)' }} />}
-      <div style={{ position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 300, width: '360px', background: '#fff', transform: menuOpen ? 'translateX(0)' : 'translateX(-100%)', transition: 'transform .4s cubic-bezier(.4,0,.2,1)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 40px', height: '60px', borderBottom: '1px solid #ececec' }}>
-          <Logo to={null} color="dark" size="md" />
-          <button onClick={() => setMenuOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}>
+      {menuOpen && <div onClick={() => setMenuOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 299, background: 'rgba(0,0,0,.55)', backdropFilter: 'blur(2px)' }} />}
+      <div style={{ position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 300, width: '340px', background: '#fff', display: 'flex', flexDirection: 'column', transform: menuOpen ? 'translateX(0)' : 'translateX(-100%)', transition: 'transform .4s cubic-bezier(.4,0,.2,1)' }}>
+        <div style={{ padding: '32px 40px 28px', borderBottom: '.5px solid #f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Logo to={null} color="dark" size="sm" />
+          <button onClick={() => setMenuOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#999', display: 'flex' }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
           </button>
         </div>
-        <nav style={{ padding: '28px 40px', display: 'flex', flexDirection: 'column' }}>
+        <nav style={{ flex: 1, padding: '16px 0' }}>
           {[
             { label: 'Accueil', to: '/' },
-            { label: 'Catalogue', to: '/catalogue' },
+            { label: 'Catégories', to: '/catalogue' },
+            { label: 'Experts', to: '/personal-shoppers' },
             { label: 'Comment ça marche', to: '/how-it-works' },
-            { label: 'FAQ', to: '/faq' },
-            { label: 'Contact', to: '/contact' },
-            { label: role ? 'Mon espace' : 'Se connecter', to: dashLink },
+            { label: 'Avis clients', to: '/avis' },
           ].map(({ label, to }) => (
             <Link key={label} to={to} onClick={() => setMenuOpen(false)}
-              style={{ fontFamily: serif, fontSize: '2rem', fontWeight: 300, color: '#1a1a1a', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid #f0f0f0' }}>
-              {label}
-            </Link>
+              style={{ display: 'block', padding: '18px 40px', fontFamily: serif, fontSize: '2rem', fontWeight: 300, fontStyle: 'italic', color: COLORS.black, textDecoration: 'none', borderBottom: '.5px solid #f8f8f8', transition: 'color .2s' }}
+              onMouseEnter={e => e.currentTarget.style.color = COLORS.gold} onMouseLeave={e => e.currentTarget.style.color = COLORS.black}
+            >{label}</Link>
           ))}
         </nav>
       </div>
@@ -350,34 +348,32 @@ export default function Categorie() {
           return (
             <button key={cat}
               onClick={() => cat === 'Tout' ? navigate('/catalogue') : navigate(`/catalogue/${slug}`)}
-              style={{ fontFamily: sans, fontSize: '11px', fontWeight: isActive ? '400' : '300', letterSpacing: '.04em', color: isActive ? '#1a1a1a' : '#888', background: 'none', border: 'none', borderBottom: isActive ? '1.5px solid #1a1a1a' : '1.5px solid transparent', padding: '14px 18px', whiteSpace: 'nowrap', cursor: 'pointer', transition: 'color .2s, border-color .2s' }}
-              onMouseEnter={e => { if (!isActive) { e.currentTarget.style.color = '#1a1a1a'; e.currentTarget.style.borderBottomColor = '#C9A84C'; } }}
+              style={{ fontFamily: sans, fontSize: '11px', fontWeight: isActive ? '400' : '300', letterSpacing: '.04em', color: isActive ? COLORS.black : '#888', background: 'none', border: 'none', borderBottom: isActive ? `1.5px solid ${COLORS.black}` : '1.5px solid transparent', padding: '14px 18px', whiteSpace: 'nowrap', cursor: 'pointer', transition: 'color .2s, border-color .2s' }}
+              onMouseEnter={e => { if (!isActive) { e.currentTarget.style.color = COLORS.black; e.currentTarget.style.borderBottomColor = COLORS.gold; } }}
               onMouseLeave={e => { if (!isActive) { e.currentTarget.style.color = '#888'; e.currentTarget.style.borderBottomColor = 'transparent'; } }}
             >{cat}</button>
           );
         })}
       </nav>
 
-      <div style={{ height: '480px', overflow: 'hidden', marginTop: '110px', position: 'relative' }}>
+      <div style={{ height: '480px', overflow: 'hidden', marginTop: '120px', position: 'relative' }}>
         <img src={data.hero} alt={data.titre}
           style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 30%', filter: 'brightness(.5)' }} />
         <div style={{ position: 'absolute', bottom: '56px', left: '56px' }}>
-          <p style={{ fontSize: '9px', letterSpacing: '.3em', textTransform: 'uppercase', color: '#C9A84C', marginBottom: '12px', fontFamily: sans }}>Heneris · {data.titre}</p>
+          <p style={{ fontSize: '9px', letterSpacing: '.3em', textTransform: 'uppercase', color: COLORS.gold, marginBottom: '12px', fontFamily: sans }}>Heneris · {data.titre}</p>
           <h1 style={{ fontFamily: serif, fontSize: '3rem', fontWeight: 300, fontStyle: 'italic', color: '#fff', marginBottom: '12px', lineHeight: 1.1 }}>{data.titre}</h1>
-          <p style={{ fontFamily: serif, fontSize: '1rem', fontStyle: 'italic', color: 'rgba(255,255,255,.7)', fontWeight: 300, maxWidth: '480px', marginBottom: '28px' }}>{data.description}</p>
-          <button onClick={handleDemande}
-            style={{ fontFamily: sans, fontSize: '9px', letterSpacing: '.18em', textTransform: 'uppercase', color: '#fff', border: '1px solid rgba(255,255,255,.7)', background: 'transparent', padding: '12px 32px', cursor: 'pointer' }}
-            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,.15)'}
-            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-          >Faire une demande</button>
+          <p style={{ fontFamily: serif, fontSize: '1rem', fontStyle: 'italic', color: 'rgba(255,255,255,.7)', fontWeight: 300, maxWidth: '480px', marginBottom: '20px' }}>{data.description}</p>
+          <p style={{ fontFamily: sans, fontSize: '10px', letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(255,255,255,.55)', borderTop: '.5px solid rgba(255,255,255,.25)', paddingTop: '14px', display: 'inline-block' }}>
+            {data.produits.length} références disponibles dans cette sélection
+          </p>
         </div>
       </div>
 
       <div style={{ padding: '56px 48px 80px', boxSizing: 'border-box' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '40px' }}>
           <div>
-            <p style={{ fontFamily: sans, fontSize: '9px', letterSpacing: '.24em', textTransform: 'uppercase', color: '#C9A84C', marginBottom: '8px' }}>Références disponibles</p>
-            <h2 style={{ fontFamily: serif, fontSize: '1.6rem', fontWeight: 300, fontStyle: 'italic', color: '#1a1a1a' }}>Pièces recherchées par nos clients</h2>
+            <p style={{ fontFamily: sans, fontSize: '9px', letterSpacing: '.24em', textTransform: 'uppercase', color: COLORS.gold, marginBottom: '8px' }}>Références disponibles</p>
+            <h2 style={{ fontFamily: serif, fontSize: '1.6rem', fontWeight: 300, fontStyle: 'italic', color: COLORS.black }}>Pièces recherchées par nos clients</h2>
           </div>
           <Link to="/catalogue" style={{ fontSize: '9px', letterSpacing: '.14em', textTransform: 'uppercase', color: '#888', textDecoration: 'none', fontFamily: sans, borderBottom: '.5px solid #e0e0e0', paddingBottom: '2px' }}>
             ← Tout le catalogue
@@ -394,12 +390,12 @@ export default function Categorie() {
                 />
               </div>
               <div style={{ padding: '14px 16px 20px', background: '#fff' }}>
-                <p style={{ fontFamily: sans, fontSize: '8px', letterSpacing: '.18em', textTransform: 'uppercase', color: '#C9A84C', marginBottom: '4px', fontWeight: 400 }}>{marque}</p>
-                <p style={{ fontFamily: serif, fontSize: '1rem', fontWeight: 300, color: '#1a1a1a', marginBottom: '10px' }}>{nom}</p>
+                <p style={{ fontFamily: sans, fontSize: '8px', letterSpacing: '.18em', textTransform: 'uppercase', color: COLORS.gold, marginBottom: '4px', fontWeight: 400 }}>{marque}</p>
+                <p style={{ fontFamily: serif, fontSize: '1rem', fontWeight: 300, color: COLORS.black, marginBottom: '10px' }}>{nom}</p>
                 <button onClick={handleDemande}
-                  style={{ fontFamily: sans, fontSize: '8px', letterSpacing: '.14em', textTransform: 'uppercase', color: '#1a1a1a', background: 'none', border: 'none', padding: 0, cursor: 'pointer', borderBottom: '.5px solid #1a1a1a', paddingBottom: '1px' }}
-                  onMouseEnter={e => { e.currentTarget.style.color = '#C9A84C'; e.currentTarget.style.borderBottomColor = '#C9A84C'; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = '#1a1a1a'; e.currentTarget.style.borderBottomColor = '#1a1a1a'; }}
+                  style={{ fontFamily: sans, fontSize: '8px', letterSpacing: '.14em', textTransform: 'uppercase', color: COLORS.black, background: 'none', border: 'none', padding: 0, cursor: 'pointer', borderBottom: `.5px solid ${COLORS.black}`, paddingBottom: '1px' }}
+                  onMouseEnter={e => { e.currentTarget.style.color = COLORS.gold; e.currentTarget.style.borderBottomColor = COLORS.gold; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = COLORS.black; e.currentTarget.style.borderBottomColor = COLORS.black; }}
                 >Faire une demande →</button>
               </div>
             </div>
@@ -407,20 +403,20 @@ export default function Categorie() {
         </div>
       </div>
 
-      <div style={{ margin: '0 48px 80px', background: '#1a1a1a', padding: '64px 80px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxSizing: 'border-box' }}>
+      <div style={{ margin: '0 48px 80px', background: COLORS.sand, padding: '64px 80px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxSizing: 'border-box' }}>
         <div>
-          <p style={{ fontSize: '8px', letterSpacing: '.28em', textTransform: 'uppercase', color: '#C9A84C', marginBottom: '12px', fontFamily: sans }}>Vous ne trouvez pas ?</p>
-          <h2 style={{ fontFamily: serif, fontSize: '1.8rem', fontWeight: 300, fontStyle: 'italic', color: '#fff', marginBottom: '12px', lineHeight: 1.3 }}>
+          <p style={{ fontSize: '8px', letterSpacing: '.28em', textTransform: 'uppercase', color: COLORS.gold, marginBottom: '12px', fontFamily: sans }}>Vous ne trouvez pas ?</p>
+          <h2 style={{ fontFamily: serif, fontSize: '1.8rem', fontWeight: 300, fontStyle: 'italic', color: COLORS.black, marginBottom: '12px', lineHeight: 1.3 }}>
             La pièce que vous cherchez<br />n'est pas listée ici ?
           </h2>
-          <p style={{ fontFamily: serif, fontSize: '1rem', fontStyle: 'italic', fontWeight: 300, color: 'rgba(255,255,255,.6)', lineHeight: 1.8, maxWidth: '420px' }}>
+          <p style={{ fontFamily: serif, fontSize: '1rem', fontStyle: 'italic', fontWeight: 300, color: COLORS.stone, lineHeight: 1.8, maxWidth: '420px' }}>
             Nos shoppers peuvent sourcer n'importe quelle pièce de luxe dans le monde entier.
           </p>
         </div>
         <Link to={role === 'client' ? '/deposer-demande' : '/login'}
-          style={{ fontFamily: sans, fontSize: '9px', letterSpacing: '.18em', textTransform: 'uppercase', color: '#1a1a1a', background: '#fff', padding: '14px 40px', textDecoration: 'none', whiteSpace: 'nowrap', flexShrink: 0, transition: 'all .2s' }}
-          onMouseEnter={e => { e.currentTarget.style.background = '#C9A84C'; e.currentTarget.style.color = '#fff'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#1a1a1a'; }}
+          style={{ fontFamily: sans, fontSize: '9px', letterSpacing: '.18em', textTransform: 'uppercase', color: '#fff', background: COLORS.gold, padding: '14px 40px', textDecoration: 'none', whiteSpace: 'nowrap', flexShrink: 0, transition: 'all .2s' }}
+          onMouseEnter={e => { e.currentTarget.style.background = COLORS.black; }}
+          onMouseLeave={e => { e.currentTarget.style.background = COLORS.gold; }}
         >Faire une demande</Link>
       </div>
 
