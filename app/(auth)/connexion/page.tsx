@@ -25,6 +25,11 @@ export default async function ConnexionPage({
     <div>
       <p className="eyebrow">Votre compte</p>
       <h1 className="mt-4 text-3xl">Se connecter</h1>
+      <p className="mt-3 text-[0.9rem] text-ink-soft">
+        Un seul accès, que vous soyez <strong className="font-medium text-ink">client</strong>{" "}
+        ou <strong className="font-medium text-ink">personal shopper</strong> — vous
+        arrivez sur votre espace selon votre profil.
+      </p>
 
       <div className="mt-8 grid gap-6">
         <GoogleButton suite={suite} />
