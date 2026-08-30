@@ -5,25 +5,29 @@ import type { Database } from "@/types/database";
 
 /**
  * Retour d'un fournisseur OAuth (Google). Échange le `code` contre une session.
- *
- * Les cookies de session sont écrits **directement sur la réponse de
- * redirection** : dans un Route Handler, `cookies().set()` ne survit pas
- * toujours à un `NextResponse.redirect`, ce qui laissait l'utilisateur
- * déconnecté après le retour de Google.
+ * Version diagnostic : chaque issue est encodée dans l'URL (?diag=...).
  */
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
+  const oauthErr = searchParams.get("error");
   const suite = searchParams.get("suite");
   const next = suite && suite.startsWith("/") ? suite : "/tableau-de-bord";
 
-  const failure = NextResponse.redirect(
-    new URL("/connexion?erreur=oauth", origin),
-  );
-  if (!code) return failure;
+  const back = (diag: string) =>
+    NextResponse.redirect(
+      new URL(`/connexion?diag=${encodeURIComponent(diag)}`, origin),
+    );
+
+  if (oauthErr) return back(`provider:${oauthErr}`);
+  if (!code) return back("nocode");
 
   const cookieStore = await cookies();
-  const response = NextResponse.redirect(new URL(next, origin));
+  const nVerifier = cookieStore
+    .getAll()
+    .filter((c) => c.name.includes("code-verifier")).length;
+
+  const collected: { name: string; value: string; options?: object }[] = [];
 
   const supabase = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -31,14 +35,23 @@ export async function GET(request: NextRequest) {
     {
       cookies: {
         getAll: () => cookieStore.getAll(),
-        setAll: (list) =>
-          list.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options),
-          ),
+        setAll: (list) => {
+          for (const c of list) collected.push(c);
+        },
       },
     },
   );
 
-  const { error } = await supabase.auth.exchangeCodeForSession(code);
-  return error ? failure : response;
+  const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+
+  if (error) return back(`exchange:${error.message}|verif:${nVerifier}`);
+  if (!data.session) return back(`nosession|verif:${nVerifier}`);
+
+  const response = NextResponse.redirect(
+    new URL(`${next}?diag=ok-c${collected.length}-v${nVerifier}`, origin),
+  );
+  for (const { name, value, options } of collected) {
+    response.cookies.set(name, value, options as never);
+  }
+  return response;
 }
