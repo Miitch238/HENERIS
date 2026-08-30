@@ -54,5 +54,6 @@ détaillé dans le plan de cadrage ; migrations à venir dans `supabase/migratio
   strictement nécessaire (info sur `/legal/cookies`). Reste **hors code** : mentions
   `[À COMPLÉTER]` des pages légales (infos société) + relecture juridique.
 - [~] **Étape 8** — Finitions & mise en ligne (manifest, métadonnées Twitter/keywords,
-  `.env.example` + README de déploiement). Reste : passe a11y/perf, états de chargement,
-  déploiement Vercel + domaine (utilisateur).
+  `.env.example` + README de déploiement, passe a11y : contrastes AA, anneau de focus
+  or profond, lien d'évitement, nav clavier). Reste : déploiement Vercel + domaine
+  (utilisateur), migrations `0003`/`0004`, activer confirmation e-mail.
