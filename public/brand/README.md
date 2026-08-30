@@ -9,7 +9,7 @@ Reconstruction vectorielle du wordmark **HENERIS.** — voir [[heneris-mvp-decis
 | `logo.svg` | Wordmark principal — texte noir `#111111` + point or `#C9A84B`. Fonds clairs. |
 | `logo-mono.svg` | Wordmark en `currentColor` + point or. Pour fonds sombres : définir `color` en CSS (ex. ivoire `#F1EBDC`). |
 | `logo-regular.svg` | Variante moins grasse (Playfair Display 700 au lieu de 900). Alternative si le 900 paraît trop lourd. |
-| `favicon.svg` | Marque courte « H. » pour favicon / avatar / app icon. |
+| `favicon.svg` | Lockup court « H. » (H + point or), cadrage carré. Identique à `app/icon.svg` (favicon Next) ; sert aussi d'icône PWA et d'avatar. |
 
 Tous les chemins sont dans `public/` → survivent au passage à Next.js.
 

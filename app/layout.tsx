@@ -41,11 +41,26 @@ export const metadata: Metadata = {
   description:
     "Heneris met en relation des personal shoppers avec des clients, quel que soit votre budget. Trouvez la bonne personne, échangez, décidez.",
   applicationName: "Heneris",
+  keywords: [
+    "personal shopper",
+    "personal shopper France",
+    "conseil en achat",
+    "conseil en style",
+    "shopping accompagné",
+    "marketplace personal shopper",
+  ],
+  authors: [{ name: "Heneris" }],
   openGraph: {
     type: "website",
     locale: "fr_FR",
     siteName: "Heneris",
     url: SITE_URL,
+    title: "Heneris — Trouvez votre personal shopper",
+    description:
+      "La marketplace qui met en relation personal shoppers et clients, tous budgets.",
+  },
+  twitter: {
+    card: "summary_large_image",
     title: "Heneris — Trouvez votre personal shopper",
     description:
       "La marketplace qui met en relation personal shoppers et clients, tous budgets.",
