@@ -4,16 +4,23 @@ import AdminLayout from '../components/AdminLayout';
 import '../styles/admin.css';
 
 const MOCK = [
-  { id: 'SIG-001', signale: 'Pierre V.',    typeCompte: 'Shopper', motif: 'Sac Dior présenté comme authentique, coutures et logo suspects.',          signalePar: 'Marie Dupont',      statut: 'ouvert',   date: '2026-05-13' },
-  { id: 'SIG-002', signale: 'Compte #84',   typeCompte: 'Client',  motif: 'Messages à caractère harcelant répétés dans la messagerie intégrée.',       signalePar: 'Sophie M.',         statut: 'en cours',  date: '2026-05-10' },
-  { id: 'SIG-003', signale: 'Shopper #48',  typeCompte: 'Shopper', motif: "Documents d'identité Stripe potentiellement falsifiés.",                    signalePar: 'Admin système',     statut: 'résolu',    date: '2026-04-22' },
-  { id: 'SIG-004', signale: 'Marc L.',      typeCompte: 'Shopper', motif: 'Demande de paiement hors plateforme par virement bancaire direct.',         signalePar: 'Thomas Bernard',    statut: 'ouvert',   date: '2026-05-14' },
-  { id: 'SIG-005', signale: 'Camille R.',   typeCompte: 'Shopper', motif: "Photos d'articles non conformes aux standards de la plateforme.",           signalePar: 'Isabelle Martin',   statut: 'résolu',    date: '2026-05-02' },
-  { id: 'SIG-006', signale: 'Utilisateur #112', typeCompte: 'Client', motif: 'Tentative de redirection vers un site tiers via la messagerie.',         signalePar: 'Aline Rousseau',    statut: 'en cours',  date: '2026-05-11' },
+  { id: 'SIG-001', type: 'Article contrefait',    signale: 'Pierre V. (shopper)',  motif: 'Sac Dior présenté comme authentique, coutures et logo suspects.',          statut: 'ouvert',   date: '2026-05-13' },
+  { id: 'SIG-002', type: 'Comportement abusif',   signale: 'Compte #84',           motif: 'Messages à caractère harcelant répétés dans la messagerie intégrée.',       statut: 'en cours',  date: '2026-05-10' },
+  { id: 'SIG-003', type: 'Fausse identité',       signale: 'Shopper #48',          motif: "Documents d'identité Stripe potentiellement falsifiés.",                    statut: 'résolu',    date: '2026-04-22' },
+  { id: 'SIG-004', type: 'Arnaque suspectée',     signale: 'Marc L. (shopper)',    motif: 'Demande de paiement hors plateforme par virement bancaire direct.',         statut: 'ouvert',   date: '2026-05-14' },
+  { id: 'SIG-005', type: 'Contenu inapproprié',   signale: 'Camille R. (shopper)', motif: "Photos d'articles non conformes aux standards de la plateforme.",           statut: 'résolu',    date: '2026-05-02' },
+  { id: 'SIG-006', type: 'Arnaque suspectée',     signale: 'Utilisateur #112',     motif: 'Tentative de redirection vers un site tiers via la messagerie.',            statut: 'en cours',  date: '2026-05-11' },
 ];
 
 const ST = { ouvert: 'ap-badge--red', 'en cours': 'ap-badge--yellow', résolu: 'ap-badge--green' };
-const COLS = '80px minmax(120px,1fr) 90px minmax(180px,2fr) minmax(120px,1fr) 90px 80px 100px';
+const TYPE_COLORS = {
+  'Article contrefait':  '#7C3AED',
+  'Comportement abusif': '#DC2626',
+  'Fausse identité':     '#D97706',
+  'Arnaque suspectée':   '#059669',
+  'Contenu inapproprié': '#2563EB',
+};
+const COLS = '90px 150px minmax(140px,1fr) minmax(200px,2fr) 90px 90px';
 
 export default function AdminSignalements() {
   const [user, setUser]     = useState(null);
@@ -60,44 +67,32 @@ export default function AdminSignalements() {
         <div className="ap-table">
           <div className="ap-table-head" style={{ gridTemplateColumns: COLS }}>
             <span>ID</span>
+            <span>Type</span>
             <span>Utilisateur signalé</span>
-            <span>Type compte</span>
             <span>Motif</span>
-            <span>Signalé par</span>
             <span>Statut</span>
             <span>Date</span>
-            <span>Action</span>
           </div>
           {sigs.map(s => (
             <div className="ap-table-row" style={{ gridTemplateColumns: COLS }} key={s.id}>
               <span style={{ fontFamily: 'monospace', fontSize: '0.72rem', color: '#aaa' }}>{s.id}</span>
-              <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#1a1a1a' }}>{s.signale}</span>
               <span>
                 <span style={{
                   display: 'inline-block',
-                  fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.05em',
+                  fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.06em',
                   padding: '3px 9px', borderRadius: 99,
-                  background: s.typeCompte === 'Shopper' ? 'rgba(201,168,76,0.12)' : 'rgba(37,99,235,0.1)',
-                  color: s.typeCompte === 'Shopper' ? '#C9A84C' : '#2563EB',
+                  background: `${TYPE_COLORS[s.type]}18`,
+                  color: TYPE_COLORS[s.type],
                   whiteSpace: 'nowrap',
                 }}>
-                  {s.typeCompte}
+                  {s.type}
                 </span>
               </span>
+              <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#1a1a1a' }}>{s.signale}</span>
               <span style={{ fontSize: '0.8rem', color: '#555', lineHeight: 1.4 }}>{s.motif}</span>
-              <span style={{ fontSize: '0.82rem', color: '#555' }}>{s.signalePar}</span>
               <span><span className={`ap-badge ${ST[s.statut]}`}>{s.statut}</span></span>
               <span style={{ fontSize: '0.75rem', color: '#bbb' }}>
                 {new Date(s.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}
-              </span>
-              <span>
-                <button
-                  className="ap-action-btn"
-                  style={{ padding: '4px 12px', fontSize: '0.75rem', borderRadius: 6, border: '1px solid #C9A84C', color: '#C9A84C', background: 'rgba(201,168,76,0.06)', cursor: 'pointer', whiteSpace: 'nowrap' }}
-                  onClick={() => alert(`Examen du signalement ${s.id}`)}
-                >
-                  Examiner
-                </button>
               </span>
             </div>
           ))}

@@ -150,7 +150,7 @@ export default function DeposerDemande() {
                 </div>
               </div>
               <span className="form-hint" style={{ marginTop: -12 }}>
-              Protection acheteur : 5% au-dessus de 1 000 €, 10% en dessous.
+                Commission Hénéris de 10% s'appliquera sur le prix final.
               </span>
 
               <div className="form-field">

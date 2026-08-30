@@ -1,0 +1,28 @@
+.dd-back { display: inline-block; font-size: 0.82rem; color: #888; text-decoration: none; margin-bottom: 28px; transition: color 0.2s; }
+.dd-back:hover { color: #C9A84C; }
+.dd-layout { display: grid; grid-template-columns: 1fr 320px; gap: 40px; align-items: start; }
+.dd-main { display: flex; flex-direction: column; gap: 24px; }
+.dd-info-block { display: flex; flex-direction: column; gap: 6px; }
+.dd-label { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #aaa; }
+.dd-text { font-size: 0.9rem; color: #444; line-height: 1.75; }
+.dd-value { font-size: 0.9rem; font-weight: 500; color: #1a1a1a; }
+.dd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; border-top: 1px solid #f0f0f0; padding-top: 24px; }
+
+/* Sidebar */
+.dd-sidebar { border: 1px solid #ebebeb; border-radius: 4px; padding: 28px; position: sticky; top: 84px; }
+.dd-cta-block { text-align: center; }
+.dd-cta-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: #1a1a1a; margin-bottom: 8px; }
+.dd-cta-sub { font-size: 0.82rem; color: #888; line-height: 1.5; }
+.dd-form { display: flex; flex-direction: column; gap: 16px; }
+.dd-form-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: #1a1a1a; margin-bottom: 4px; }
+.dd-form-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #888; margin-bottom: 6px; display: block; }
+.dd-field { display: flex; flex-direction: column; }
+.dd-input { background: #fafafa; border: 1px solid #e0e0e0; border-radius: 2px; color: #1a1a1a; font-family: 'Inter', sans-serif; font-size: 0.875rem; padding: 10px 14px; outline: none; transition: border-color 0.2s; }
+.dd-input:focus { border-color: #C9A84C; }
+.dd-textarea { resize: vertical; min-height: 100px; line-height: 1.5; }
+.dd-commission { font-size: 0.72rem; color: #888; margin-top: 5px; line-height: 1.4; }
+.dd-cancel { background: none; border: none; color: #aaa; font-size: 0.78rem; cursor: pointer; text-align: center; padding: 4px; transition: color 0.2s; }
+.dd-cancel:hover { color: #555; }
+.dd-sent { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.dd-sent p { font-size: 0.875rem; color: #2e7d32; font-weight: 500; }
+@media (max-width: 768px) { .dd-layout { grid-template-columns: 1fr; } .dd-sidebar { position: static; } .dd-grid { grid-template-columns: 1fr; } }

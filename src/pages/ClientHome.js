@@ -18,44 +18,28 @@ const STATUS_CLASS = {
   annule: 'badge--cancelled',
 };
 
+const MOCK_DEMANDES = [
+  { id: 1, categorie: 'Maroquinerie', description: 'Cherche un sac Hermès Birkin 30 en cuir togo noir, hardware gold.', budget_min: 8000, budget_max: 12000, statut: 'en_cours', created_at: '2026-05-10' },
+  { id: 2, categorie: 'Montres', description: 'Rolex Datejust 36mm cadran blanc, bracelet jubilé.', budget_min: 7000, budget_max: 9500, statut: 'en_attente', created_at: '2026-05-12' },
+  { id: 3, categorie: 'Bijoux', description: 'Collier Cartier Love en or jaune 18k, taille 38cm.', budget_min: 3500, budget_max: 5000, statut: 'livre', created_at: '2026-04-28' },
+];
+
 export default function ClientHome() {
-  const [user, setUser]         = useState(null);
-  const [demandes, setDemandes] = useState([]);
-  const [messagesNL, setMessagesNL] = useState(0);
+  const [user, setUser] = useState(null);
+  const [demandes] = useState(MOCK_DEMANDES);
 
   useEffect(() => {
-    supabase.auth.getUser().then(async ({ data }) => {
-      const u = data.user;
-      setUser(u);
-      if (!u) return;
-
-      const { data: dem } = await supabase
-        .from('demandes')
-        .select('*')
-        .eq('client_id', u.id)
-        .order('created_at', { ascending: false })
-        .limit(5);
-
-      setDemandes(dem || []);
-
-      const { count } = await supabase
-        .from('messages')
-        .select('*', { count: 'exact', head: true })
-        .eq('lu', false)
-        .neq('sender_id', u.id);
-
-      setMessagesNL(count || 0);
-    });
+    supabase.auth.getUser().then(({ data }) => setUser(data.user));
   }, []);
 
-  const firstName = user?.user_metadata?.first_name || '';
+  const firstName = user?.user_metadata?.first_name || 'vous';
   const actives = demandes.filter(d => d.statut === 'en_attente' || d.statut === 'en_cours').length;
-  const livrees = demandes.filter(d => d.statut === 'livre').length;
 
   return (
     <ClientLayout user={user}>
       <div className="ch-page">
 
+        {/* ── Header ── */}
         <section className="ch-header">
           <div className="ch-header-text">
             <p className="ch-eyebrow">Tableau de bord</p>
@@ -67,25 +51,27 @@ export default function ClientHome() {
           </Link>
         </section>
 
+        {/* ── Stats ── */}
         <section className="ch-stats">
           <div className="ch-stat">
             <span className="ch-stat-value">{actives}</span>
             <span className="ch-stat-label">Demandes actives</span>
           </div>
           <div className="ch-stat">
-            <span className="ch-stat-value">{livrees}</span>
+            <span className="ch-stat-value">{demandes.filter(d => d.statut === 'livre').length}</span>
             <span className="ch-stat-label">Commandes livrées</span>
           </div>
           <div className="ch-stat">
-            <span className="ch-stat-value">{messagesNL || '—'}</span>
+            <span className="ch-stat-value">—</span>
             <span className="ch-stat-label">Messages non lus</span>
           </div>
         </section>
 
+        {/* ── Demandes ── */}
         <section className="ch-section">
           <div className="ch-section-header">
             <h2 className="ch-section-title">Mes demandes</h2>
-            <Link to="/client/suivi" className="ch-see-all">Voir tout →</Link>
+            <Link to="/mes-demandes" className="ch-see-all">Voir tout →</Link>
           </div>
 
           {demandes.length === 0 ? (
@@ -108,7 +94,7 @@ export default function ClientHome() {
                   <p className="ch-demande-desc">{d.description}</p>
                   <div className="ch-demande-bottom">
                     <span className="ch-budget">
-                      Budget : {d.budget_min?.toLocaleString('fr-FR')} € – {d.budget_max?.toLocaleString('fr-FR')} €
+                      Budget : {d.budget_min.toLocaleString('fr-FR')} € – {d.budget_max.toLocaleString('fr-FR')} €
                     </span>
                     <span className="ch-date">{new Date(d.created_at).toLocaleDateString('fr-FR')}</span>
                   </div>
@@ -118,6 +104,7 @@ export default function ClientHome() {
           )}
         </section>
 
+        {/* ── Raccourcis ── */}
         <section className="ch-section">
           <h2 className="ch-section-title">Accès rapide</h2>
           <div className="ch-shortcuts">
@@ -133,11 +120,11 @@ export default function ClientHome() {
               </span>
               <span className="ch-shortcut-label">Messages</span>
             </Link>
-            <Link to="/client/suivi" className="ch-shortcut">
+            <Link to="/mes-commandes" className="ch-shortcut">
               <span className="ch-shortcut-icon">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
               </span>
-              <span className="ch-shortcut-label">Suivi</span>
+              <span className="ch-shortcut-label">Commandes</span>
             </Link>
           </div>
         </section>

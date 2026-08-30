@@ -6,68 +6,47 @@ import './MesArticles.css';
 
 const CATS = ['Maroquinerie', 'Montres', 'Bijoux', 'Vêtements', 'Art de vivre', 'Autre'];
 const STATUTS = ['disponible', 'réservé', 'vendu'];
+
 const INIT = { titre: '', categorie: '', prix: '', description: '' };
 
+const MOCK_ARTICLES = [
+  { id: 1, titre: 'Chanel Classic Flap Medium', categorie: 'Maroquinerie', prix: 9400, statut: 'disponible', created_at: '2026-05-01' },
+  { id: 2, titre: 'Cartier Tank Solo',           categorie: 'Montres',      prix: 3200, statut: 'réservé',    created_at: '2026-04-20' },
+  { id: 3, titre: 'Bracelet Pomellato Nudo',      categorie: 'Bijoux',       prix: 2800, statut: 'vendu',      created_at: '2026-04-10' },
+];
+
+const STATUT_CLASS = { disponible: 'sp-badge--done', réservé: 'sp-badge--waiting', vendu: 'sp-badge--cancelled' };
+
 export default function MesArticles() {
-  const [user, setUser]         = useState(null);
-  const [articles, setArticles] = useState([]);
+  const [user, setUser]       = useState(null);
+  const [articles, setArticles] = useState(MOCK_ARTICLES);
   const [showModal, setShowModal] = useState(false);
-  const [form, setForm]         = useState(INIT);
-  const [saving, setSaving]     = useState(false);
-  const [loading, setLoading]   = useState(true);
+  const [form, setForm]       = useState(INIT);
+  const [saving, setSaving]   = useState(false);
 
-  useEffect(() => {
-    supabase.auth.getUser().then(async ({ data }) => {
-      const u = data.user;
-      setUser(u);
-      if (!u) return;
-      await chargerArticles(u.id);
-    });
-  }, []);
-
-  async function chargerArticles(userId) {
-    setLoading(true);
-    const { data } = await supabase
-      .from('articles')
-      .select('*')
-      .eq('shopper_id', userId)
-      .order('created_at', { ascending: false });
-    setArticles(data || []);
-    setLoading(false);
-  }
+  useEffect(() => { supabase.auth.getUser().then(({ data }) => setUser(data.user)); }, []);
 
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async e => {
     e.preventDefault();
     setSaving(true);
-    const { data, error } = await supabase
-      .from('articles')
-      .insert({
-        shopper_id:  user.id,
-        titre:       form.titre,
-        categorie:   form.categorie,
-        prix:        +form.prix,
-        description: form.description,
-        statut:      'disponible',
-      })
-      .select()
-      .single();
-
-    if (!error && data) setArticles(prev => [data, ...prev]);
+    // TODO: insert dans Supabase
+    const newArticle = { id: Date.now(), ...form, prix: +form.prix, statut: 'disponible', created_at: new Date().toISOString().split('T')[0] };
+    setArticles(prev => [newArticle, ...prev]);
     setForm(INIT);
     setSaving(false);
     setShowModal(false);
   };
 
-  const changeStatut = async (id, statut) => {
-    await supabase.from('articles').update({ statut }).eq('id', id);
+  const changeStatut = (id, statut) => {
     setArticles(prev => prev.map(a => a.id === id ? { ...a, statut } : a));
+    // TODO: update dans Supabase
   };
 
-  const deleteArticle = async id => {
-    await supabase.from('articles').delete().eq('id', id);
+  const deleteArticle = id => {
     setArticles(prev => prev.filter(a => a.id !== id));
+    // TODO: delete dans Supabase
   };
 
   return (
@@ -82,9 +61,7 @@ export default function MesArticles() {
           <button className="sp-cta" onClick={() => setShowModal(true)}>+ Publier un article</button>
         </div>
 
-        {loading ? (
-          <div className="sp-empty">Chargement…</div>
-        ) : articles.length === 0 ? (
+        {articles.length === 0 ? (
           <div className="sp-empty">Aucun article publié. Cliquez sur "+ Publier un article" pour commencer.</div>
         ) : (
           <div className="ma-table">
@@ -97,13 +74,15 @@ export default function MesArticles() {
                 <span className="ma-article-cat">{a.categorie}</span>
                 <span className="ma-article-prix">{(+a.prix).toLocaleString('fr-FR')} €</span>
                 <span>
-                  <select className="ma-statut-select" value={a.statut} onChange={e => changeStatut(a.id, e.target.value)}>
+                  <select
+                    className="ma-statut-select"
+                    value={a.statut}
+                    onChange={e => changeStatut(a.id, e.target.value)}
+                  >
                     {STATUTS.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </span>
-                <span className="ma-article-date">
-                  {new Date(a.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}
-                </span>
+                <span className="ma-article-date">{new Date(a.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}</span>
                 <span>
                   <button className="ma-delete-btn" onClick={() => deleteArticle(a.id)} title="Supprimer">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
@@ -114,6 +93,7 @@ export default function MesArticles() {
           </div>
         )}
 
+        {/* Modal publication */}
         {showModal && (
           <div className="ma-modal-backdrop" onClick={() => setShowModal(false)}>
             <div className="ma-modal" onClick={e => e.stopPropagation()}>
@@ -146,7 +126,7 @@ export default function MesArticles() {
                   <textarea name="description" className="ma-input ma-textarea" rows={3} placeholder="État, provenance, accessoires inclus…" value={form.description} onChange={handleChange} required />
                 </div>
                 <button type="submit" className="sp-cta" style={{ width: '100%', justifyContent: 'center' }} disabled={saving}>
-                  {saving ? 'Publication…' : "Publier l'article"}
+                  {saving ? 'Publication…' : 'Publier l\'article'}
                 </button>
               </form>
             </div>

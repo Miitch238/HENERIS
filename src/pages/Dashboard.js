@@ -18,53 +18,37 @@ const STATUS_CLASS = {
   annule:     'ds-badge--cancelled',
 };
 
+const MOCK_DEMANDES = [
+  { id: 1, categorie: 'Maroquinerie', description: 'Hermès Birkin 30 cuir togo noir, hardware doré.', budget_min: 8000, budget_max: 12000, statut: 'en_cours',   created_at: '2026-05-10' },
+  { id: 2, categorie: 'Montres',      description: 'Rolex Datejust 36mm cadran blanc, bracelet jubilé.', budget_min: 7000, budget_max: 9500,  statut: 'en_attente', created_at: '2026-05-12' },
+  { id: 3, categorie: 'Bijoux',       description: 'Collier Cartier Love en or jaune 18k, taille 38cm.', budget_min: 3500, budget_max: 5000,  statut: 'livre',      created_at: '2026-04-28' },
+  { id: 4, categorie: 'Vêtements',    description: 'Veste Zegna Couture taille 50, coloris anthracite.', budget_min: 2000, budget_max: 4000,  statut: 'annule',     created_at: '2026-04-15' },
+];
+
 export default function Dashboard() {
-  const [user, setUser]         = useState(null);
-  const [demandes, setDemandes] = useState([]);
-  const [messagesNL, setMessagesNL] = useState(0);
+  const [user, setUser]       = useState(null);
+  const [demandes]            = useState(MOCK_DEMANDES);
   const [greeting, setGreeting] = useState('');
-  const [loading, setLoading]   = useState(true);
 
   useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setUser(data.user));
     const h = new Date().getHours();
-    setGreeting(h < 18 ? 'Bonjour' : 'Bonsoir');
-
-    supabase.auth.getUser().then(async ({ data }) => {
-      const u = data.user;
-      setUser(u);
-      if (!u) return;
-
-      // Charger les demandes réelles de l'utilisateur
-      const { data: dem } = await supabase
-        .from('demandes')
-        .select('*')
-        .eq('client_id', u.id)
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      setDemandes(dem || []);
-
-      // Compter les messages non lus
-      const { count } = await supabase
-        .from('messages')
-        .select('*', { count: 'exact', head: true })
-        .eq('lu', false)
-        .neq('sender_id', u.id);
-
-      setMessagesNL(count || 0);
-      setLoading(false);
-    });
+    if (h < 12) setGreeting('Bonjour');
+    else if (h < 18) setGreeting('Bonjour');
+    else setGreeting('Bonsoir');
   }, []);
 
-  const firstName = user?.user_metadata?.first_name || '';
-  const enAttente = demandes.filter(d => d.statut === 'en_attente').length;
-  const enCours   = demandes.filter(d => d.statut === 'en_cours').length;
-  const livrees   = demandes.filter(d => d.statut === 'livre').length;
+  const firstName   = user?.user_metadata?.first_name || '';
+  const enCours     = demandes.filter(d => d.statut === 'en_cours').length;
+  const enAttente   = demandes.filter(d => d.statut === 'en_attente').length;
+  const livrees     = demandes.filter(d => d.statut === 'livre').length;
+  const MESSAGES_NL = 3; // mock
 
   return (
     <ClientLayout user={user}>
       <div className="ds-page">
 
+        {/* ── Hero header ── */}
         <section className="ds-hero">
           <div className="ds-hero-text">
             <p className="ds-eyebrow">Tableau de bord</p>
@@ -81,6 +65,7 @@ export default function Dashboard() {
           </Link>
         </section>
 
+        {/* ── Stats ── */}
         <section className="ds-stats">
           <div className="ds-stat">
             <div className="ds-stat-icon ds-stat-icon--gold">
@@ -114,27 +99,25 @@ export default function Dashboard() {
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             </div>
             <div>
-              <p className="ds-stat-value">{messagesNL}</p>
+              <p className="ds-stat-value">{MESSAGES_NL}</p>
               <p className="ds-stat-label">Messages non lus</p>
             </div>
             <Link to="/messages" className="ds-stat-link">Voir →</Link>
           </div>
         </section>
 
+        {/* ── Demandes ── */}
         <section className="ds-section">
           <div className="ds-section-head">
             <h2 className="ds-section-title">Mes dernières demandes</h2>
             <Link to="/deposer-demande" className="ds-section-action">+ Nouvelle demande</Link>
           </div>
 
-          {loading ? (
-            <div className="ds-empty">Chargement…</div>
-          ) : demandes.length === 0 ? (
+          {demandes.length === 0 ? (
             <div className="ds-empty">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ddd" strokeWidth="1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
               <p>Aucune demande pour le moment.</p>
-              <Link to="/deposer-demande" className="ds-cta" style={{ marginTop: 16 }}>
-                Déposer ma première demande
-              </Link>
+              <Link to="/deposer-demande" className="ds-cta" style={{ marginTop: 16 }}>Déposer ma première demande</Link>
             </div>
           ) : (
             <div className="ds-table">
@@ -150,7 +133,7 @@ export default function Dashboard() {
                   <span className="ds-cat">{d.categorie}</span>
                   <span className="ds-desc">{d.description}</span>
                   <span className="ds-budget">
-                    {d.budget_min?.toLocaleString('fr-FR')} € – {d.budget_max?.toLocaleString('fr-FR')} €
+                    {d.budget_min.toLocaleString('fr-FR')} € – {d.budget_max.toLocaleString('fr-FR')} €
                   </span>
                   <span>
                     <span className={`ds-badge ${STATUS_CLASS[d.statut]}`}>
@@ -166,6 +149,7 @@ export default function Dashboard() {
           )}
         </section>
 
+        {/* ── Raccourcis ── */}
         <section className="ds-section">
           <h2 className="ds-section-title" style={{ marginBottom: 16 }}>Accès rapide</h2>
           <div className="ds-shortcuts">
@@ -181,7 +165,7 @@ export default function Dashboard() {
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               </div>
               <p className="ds-shortcut-label">Messages</p>
-              <p className="ds-shortcut-sub">{messagesNL} message{messagesNL > 1 ? 's' : ''} non lu{messagesNL > 1 ? 's' : ''}</p>
+              <p className="ds-shortcut-sub">{MESSAGES_NL} message{MESSAGES_NL > 1 ? 's' : ''} non lu{MESSAGES_NL > 1 ? 's' : ''}</p>
             </Link>
             <Link to="/deposer-demande" className="ds-shortcut">
               <div className="ds-shortcut-icon">

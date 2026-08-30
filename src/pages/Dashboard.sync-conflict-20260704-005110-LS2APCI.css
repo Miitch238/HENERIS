@@ -1,0 +1,307 @@
+.ds-page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 48px 48px 96px;
+}
+
+/* ── Hero ── */
+.ds-hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 40px;
+  padding-bottom: 36px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.ds-eyebrow {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #C9A84C;
+  margin-bottom: 10px;
+}
+
+.ds-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1.1;
+  margin-bottom: 8px;
+}
+
+.ds-subtitle {
+  font-size: 0.875rem;
+  color: #999;
+}
+
+.ds-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #C9A84C;
+  color: #1a1a1a;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 14px 26px;
+  border-radius: 2px;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.ds-cta:hover {
+  background: #E2C97A;
+  box-shadow: 0 4px 16px rgba(201,168,76,0.3);
+}
+
+/* ── Stats ── */
+.ds-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 48px;
+}
+
+.ds-stat {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid #ebebeb;
+  border-radius: 4px;
+  padding: 20px 22px;
+  position: relative;
+  transition: box-shadow 0.2s;
+}
+
+.ds-stat:hover {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+}
+
+.ds-stat--highlight {
+  border-color: rgba(201,168,76,0.3);
+  background: rgba(201,168,76,0.03);
+}
+
+.ds-stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ds-stat-icon--gold  { background: rgba(201,168,76,0.12); color: #C9A84C; }
+.ds-stat-icon--blue  { background: rgba(21,101,192,0.08); color: #1565c0; }
+.ds-stat-icon--green { background: rgba(46,125,50,0.08);  color: #2e7d32; }
+.ds-stat-icon--msg   { background: rgba(201,168,76,0.12); color: #C9A84C; }
+
+.ds-stat-value {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1;
+}
+
+.ds-stat-label {
+  font-size: 0.72rem;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 3px;
+}
+
+.ds-stat-link {
+  position: absolute;
+  bottom: 12px;
+  right: 14px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #C9A84C;
+  text-decoration: none;
+}
+
+/* ── Section ── */
+.ds-section {
+  margin-bottom: 48px;
+}
+
+.ds-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.ds-section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.ds-section-action {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #C9A84C;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  transition: opacity 0.2s;
+}
+
+.ds-section-action:hover { opacity: 0.75; }
+
+/* ── Table ── */
+.ds-table {
+  border: 1px solid #ebebeb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.ds-table-head {
+  display: grid;
+  grid-template-columns: 130px 1fr 200px 120px 80px;
+  gap: 12px;
+  padding: 11px 20px;
+  background: #fafafa;
+  border-bottom: 1px solid #ebebeb;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #aaa;
+}
+
+.ds-table-row {
+  display: grid;
+  grid-template-columns: 130px 1fr 200px 120px 80px;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 20px;
+  border-bottom: 1px solid #f5f5f5;
+  font-size: 0.85rem;
+  color: #444;
+  transition: background 0.15s;
+}
+
+.ds-table-row:last-child { border-bottom: none; }
+.ds-table-row:hover { background: #fafafa; }
+
+.ds-cat {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #C9A84C;
+}
+
+.ds-desc {
+  color: #555;
+  font-size: 0.83rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ds-budget {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #1a1a1a;
+  white-space: nowrap;
+}
+
+.ds-date {
+  font-size: 0.75rem;
+  color: #bbb;
+}
+
+/* ── Badges ── */
+.ds-badge {
+  display: inline-block;
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+.ds-badge--waiting   { background: #fff8e1; color: #b7891a; }
+.ds-badge--progress  { background: #e3f2fd; color: #1565c0; }
+.ds-badge--done      { background: #e8f5e9; color: #2e7d32; }
+.ds-badge--cancelled { background: #f5f5f5; color: #888; }
+
+/* ── Empty ── */
+.ds-empty {
+  border: 1px dashed #e0e0e0;
+  border-radius: 4px;
+  padding: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: #bbb;
+  font-size: 0.875rem;
+}
+
+/* ── Shortcuts ── */
+.ds-shortcuts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.ds-shortcut {
+  border: 1px solid #ebebeb;
+  border-radius: 4px;
+  padding: 24px 22px;
+  text-decoration: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.ds-shortcut:hover {
+  border-color: rgba(201,168,76,0.45);
+  box-shadow: 0 4px 18px rgba(201,168,76,0.1);
+}
+
+.ds-shortcut-icon {
+  color: #C9A84C;
+  margin-bottom: 14px;
+}
+
+.ds-shortcut-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+}
+
+.ds-shortcut-sub {
+  font-size: 0.75rem;
+  color: #aaa;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .ds-page { padding: 28px 20px 72px; }
+  .ds-hero { flex-direction: column; align-items: flex-start; }
+  .ds-stats { grid-template-columns: repeat(2, 1fr); }
+  .ds-table-head,
+  .ds-table-row { grid-template-columns: 110px 1fr 90px; }
+  .ds-table-head span:nth-child(3),
+  .ds-table-row span:nth-child(3),
+  .ds-table-head span:nth-child(5),
+  .ds-table-row span:nth-child(5) { display: none; }
+  .ds-shortcuts { grid-template-columns: 1fr; }
+}
