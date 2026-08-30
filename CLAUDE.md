@@ -42,8 +42,8 @@ détaillé dans le plan de cadrage ; migrations à venir dans `supabase/migratio
 ## Avancement (plan en 8 étapes)
 
 - [x] **Étape 1** — Fondations & design system (layout, nav, footer, landing, 404/erreur, clients Supabase)
-- [x] **Étape 2** — Base de données & auth (migrations SQL, `proxy.ts`, inscription/connexion/reset, groupe `(app)` protégé). ⚠ Le schéma `supabase/migrations/` doit être exécuté dans le SQL Editor Supabase.
-- [ ] Étape 3 — Profils shoppers & portfolio
+- [x] **Étape 2** — Base de données & auth (migrations SQL appliquées, `proxy.ts`, inscription/connexion/reset, groupe `(app)` protégé).
+- [x] **Étape 3** — Profils shoppers & portfolio (`/devenir-shopper`, `/profil` édition + portfolio, upload Storage, fiche publique `/shoppers/[slug]` + JSON-LD, génération de slug, dispo rapide au dashboard).
 - [ ] Étape 4 — Annuaire & recherche
 - [ ] Étape 5 — Messagerie temps réel
 - [ ] Étape 6 — Tableaux de bord & avis

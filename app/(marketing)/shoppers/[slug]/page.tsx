@@ -1,0 +1,217 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { Container } from "@/components/ui/container";
+import { Button } from "@/components/ui/button";
+import { Rating } from "@/components/shopper/rating";
+import { getShopperBySlug } from "@/lib/queries/shopper";
+import { getCurrentProfile } from "@/lib/queries/profile";
+import { publicUrl } from "@/lib/storage";
+
+const DISPO_LABEL: Record<string, string> = {
+  ouvert: "Ouvert aux demandes",
+  complet: "Complet",
+  pause: "En pause",
+};
+
+function budgetLabel(min: number | null, max: number | null) {
+  if (min !== null && max !== null) return `${min} – ${max} €`;
+  if (min !== null) return `À partir de ${min} €`;
+  if (max !== null) return `Jusqu'à ${max} €`;
+  return null;
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const result = await getShopperBySlug(slug);
+  if (!result) return { title: "Profil introuvable" };
+
+  const { shopper } = result;
+  const name = `${shopper.profile.prenom} ${shopper.profile.nom}`.trim();
+  const title = `${name || "Personal shopper"} — ${shopper.titre}`;
+  const description = shopper.bio.slice(0, 155) || `Personal shopper sur Heneris.`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "profile",
+      images: shopper.profile.avatar_url ? [shopper.profile.avatar_url] : undefined,
+    },
+  };
+}
+
+export default async function ShopperPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const result = await getShopperBySlug(slug);
+  if (!result) notFound();
+
+  const { shopper, isOwner } = result;
+  const me = await getCurrentProfile();
+  const name = `${shopper.profile.prenom} ${shopper.profile.nom}`.trim() || "Personal shopper";
+  const budget = budgetLabel(shopper.budget_min, shopper.budget_max);
+  const avatar = shopper.profile.avatar_url;
+
+  const contactHref = !me
+    ? `/connexion?suite=/shoppers/${slug}`
+    : me.role === "client"
+      ? `/messages/nouveau?shopper=${slug}`
+      : null;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    mainEntity: {
+      "@type": "Person",
+      name,
+      description: shopper.bio || undefined,
+      image: avatar || undefined,
+      address: shopper.profile.ville
+        ? { "@type": "PostalAddress", addressLocality: shopper.profile.ville }
+        : undefined,
+      knowsAbout: [...shopper.specialites, ...shopper.styles],
+    },
+  };
+
+  return (
+    <Container className="max-w-3xl py-14 md:py-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
+      {isOwner && shopper.statut !== "actif" && (
+        <div className="mb-8 border-l-2 border-warning bg-warning/8 px-4 py-3 text-[0.9rem] text-ink-soft">
+          Aperçu de votre fiche. Elle n&apos;est pas encore visible du public —
+          statut&nbsp;: <strong>en cours de validation</strong>.
+        </div>
+      )}
+
+      <Link
+        href="/shoppers"
+        className="text-[0.8rem] text-ink-faint hover:text-ink-soft"
+      >
+        ← Tous les personal shoppers
+      </Link>
+
+      <header className="mt-6 flex flex-col gap-6 border-b border-hairline pb-10 sm:flex-row sm:items-start">
+        {avatar ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={avatar}
+            alt={name}
+            className="size-28 shrink-0 border border-hairline object-cover"
+          />
+        ) : (
+          <div className="grid size-28 shrink-0 place-items-center border border-hairline bg-sunk font-serif text-3xl text-ink-faint">
+            {shopper.profile.prenom.charAt(0)}
+            {shopper.profile.nom.charAt(0)}
+          </div>
+        )}
+
+        <div className="flex-1">
+          <p className="eyebrow">{DISPO_LABEL[shopper.disponibilite]}</p>
+          <h1 className="mt-2 text-3xl md:text-4xl">{name}</h1>
+          <p className="mt-1 font-serif text-lg italic text-ink-soft">{shopper.titre}</p>
+          <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[0.85rem] text-ink-soft">
+            {shopper.profile.ville && <span>{shopper.profile.ville}</span>}
+            {budget && <span>{budget}</span>}
+            <Rating value={shopper.note_moyenne} count={shopper.nb_avis || undefined} />
+          </div>
+
+          <div className="mt-6">
+            {contactHref ? (
+              <Button href={contactHref} variant="primary">
+                Contacter {shopper.profile.prenom}
+              </Button>
+            ) : isOwner ? (
+              <Button href="/profil" variant="outline">
+                Modifier mon profil
+              </Button>
+            ) : (
+              <p className="text-[0.85rem] text-ink-faint">
+                Connectez-vous avec un compte client pour contacter ce shopper.
+              </p>
+            )}
+          </div>
+        </div>
+      </header>
+
+      {shopper.bio && (
+        <section className="border-b border-hairline py-10">
+          <h2 className="eyebrow">À propos</h2>
+          <p className="mt-4 whitespace-pre-line leading-relaxed text-ink-soft">
+            {shopper.bio}
+          </p>
+        </section>
+      )}
+
+      {(shopper.specialites.length > 0 || shopper.styles.length > 0) && (
+        <section className="border-b border-hairline py-10">
+          {shopper.specialites.length > 0 && (
+            <div>
+              <h2 className="eyebrow">Spécialités</h2>
+              <ul className="mt-3 flex flex-wrap gap-2">
+                {shopper.specialites.map((s) => (
+                  <li key={s} className="bg-sunk px-3 py-1 text-[0.85rem] text-ink">
+                    {s}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {shopper.styles.length > 0 && (
+            <div className="mt-6">
+              <h2 className="eyebrow">Styles</h2>
+              <ul className="mt-3 flex flex-wrap gap-2">
+                {shopper.styles.map((s) => (
+                  <li key={s} className="bg-sunk px-3 py-1 text-[0.85rem] text-ink">
+                    {s}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </section>
+      )}
+
+      {shopper.portfolio.length > 0 && (
+        <section className="border-b border-hairline py-10">
+          <h2 className="eyebrow">Réalisations</h2>
+          <ul className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {shopper.portfolio.map((item) => (
+              <li key={item.id}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={publicUrl("portfolios", item.image_path) ?? ""}
+                  alt={item.legende || `Réalisation de ${name}`}
+                  loading="lazy"
+                  className="aspect-square w-full border border-hairline object-cover"
+                />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <section className="py-10">
+        <h2 className="eyebrow">Avis</h2>
+        <p className="mt-4 text-[0.9rem] text-ink-soft">
+          {shopper.nb_avis > 0
+            ? "Les avis détaillés seront affichés ici."
+            : "Ce personal shopper n'a pas encore reçu d'avis."}
+        </p>
+      </section>
+    </Container>
+  );
+}

@@ -1,133 +1,358 @@
 /**
  * Types de la base Supabase — Heneris.
  *
- * Écrits à la main pour correspondre à `supabase/migrations/`. À régénérer
- * quand la CLI Supabase sera reliée au projet :
+ * Écrits à la main, dans la forme attendue par @supabase/supabase-js v2
+ * (Row / Insert / Update / Relationships par table). À régénérer quand la CLI
+ * Supabase sera reliée :
  *   npx supabase gen types typescript --linked > types/database.ts
- * Le schéma SQL reste la source de vérité.
+ * Le schéma SQL (supabase/migrations/) reste la source de vérité.
  */
 
 export type UserRole = "client" | "shopper";
 export type ShopperStatus = "en_revue" | "actif" | "refuse" | "suspendu";
 export type Availability = "ouvert" | "complet" | "pause";
 
-type Timestamps = { created_at: string };
-
-export interface ProfileRow extends Timestamps {
-  id: string;
-  user_id: string;
-  role: UserRole;
-  prenom: string;
-  nom: string;
-  avatar_url: string | null;
-  ville: string | null;
-}
-
-export interface ShopperProfileRow extends Timestamps {
-  id: string;
-  profile_id: string;
-  slug: string;
-  titre: string;
-  bio: string;
-  specialites: string[];
-  styles: string[];
-  budget_min: number | null;
-  budget_max: number | null;
-  disponibilite: Availability;
-  statut: ShopperStatus;
-  note_moyenne: number | null;
-  nb_avis: number;
-  updated_at: string;
-}
-
-export interface PortfolioItemRow extends Timestamps {
-  id: string;
-  shopper_id: string;
-  image_path: string;
-  legende: string;
-  position: number;
-}
-
-export interface ConversationRow extends Timestamps {
-  id: string;
-  client_id: string;
-  shopper_id: string;
-  last_message_at: string;
-}
-
-export interface BriefRow extends Timestamps {
-  id: string;
-  conversation_id: string;
-  categorie: string;
-  budget_min: number | null;
-  budget_max: number | null;
-  description: string;
-  delai: string | null;
-  updated_at: string;
-}
-
-export interface MessageRow extends Timestamps {
-  id: string;
-  conversation_id: string;
-  sender_id: string;
-  contenu: string;
-  read_at: string | null;
-}
-
-export interface ReviewRow extends Timestamps {
-  id: string;
-  shopper_id: string;
-  client_id: string;
-  note: number;
-  commentaire: string;
-}
-
-type TableShape<Row, Insert = Partial<Row>, Update = Partial<Row>> = {
-  Row: Row;
-  Insert: Insert;
-  Update: Update;
-};
+type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[];
 
 export type Database = {
   public: {
     Tables: {
-      profiles: TableShape<
-        ProfileRow,
-        Pick<ProfileRow, "user_id"> & Partial<ProfileRow>
-      >;
-      shopper_profiles: TableShape<
-        ShopperProfileRow,
-        Pick<ShopperProfileRow, "profile_id" | "slug"> & Partial<ShopperProfileRow>
-      >;
-      portfolio_items: TableShape<
-        PortfolioItemRow,
-        Pick<PortfolioItemRow, "shopper_id" | "image_path"> & Partial<PortfolioItemRow>
-      >;
-      conversations: TableShape<
-        ConversationRow,
-        Pick<ConversationRow, "client_id" | "shopper_id"> & Partial<ConversationRow>
-      >;
-      briefs: TableShape<
-        BriefRow,
-        Pick<BriefRow, "conversation_id" | "categorie"> & Partial<BriefRow>
-      >;
-      messages: TableShape<
-        MessageRow,
-        Pick<MessageRow, "conversation_id" | "sender_id" | "contenu"> & Partial<MessageRow>
-      >;
-      reviews: TableShape<
-        ReviewRow,
-        Pick<ReviewRow, "shopper_id" | "client_id" | "note"> & Partial<ReviewRow>
-      >;
+      profiles: {
+        Row: {
+          id: string;
+          user_id: string;
+          role: UserRole;
+          prenom: string;
+          nom: string;
+          avatar_url: string | null;
+          ville: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          role?: UserRole;
+          prenom?: string;
+          nom?: string;
+          avatar_url?: string | null;
+          ville?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          role?: UserRole;
+          prenom?: string;
+          nom?: string;
+          avatar_url?: string | null;
+          ville?: string | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "profiles_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      shopper_profiles: {
+        Row: {
+          id: string;
+          profile_id: string;
+          slug: string;
+          titre: string;
+          bio: string;
+          specialites: string[];
+          styles: string[];
+          budget_min: number | null;
+          budget_max: number | null;
+          disponibilite: Availability;
+          statut: ShopperStatus;
+          note_moyenne: number | null;
+          nb_avis: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          profile_id: string;
+          slug: string;
+          titre?: string;
+          bio?: string;
+          specialites?: string[];
+          styles?: string[];
+          budget_min?: number | null;
+          budget_max?: number | null;
+          disponibilite?: Availability;
+          statut?: ShopperStatus;
+          note_moyenne?: number | null;
+          nb_avis?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          profile_id?: string;
+          slug?: string;
+          titre?: string;
+          bio?: string;
+          specialites?: string[];
+          styles?: string[];
+          budget_min?: number | null;
+          budget_max?: number | null;
+          disponibilite?: Availability;
+          statut?: ShopperStatus;
+          note_moyenne?: number | null;
+          nb_avis?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "shopper_profiles_profile_id_fkey";
+            columns: ["profile_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      portfolio_items: {
+        Row: {
+          id: string;
+          shopper_id: string;
+          image_path: string;
+          legende: string;
+          position: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          shopper_id: string;
+          image_path: string;
+          legende?: string;
+          position?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          shopper_id?: string;
+          image_path?: string;
+          legende?: string;
+          position?: number;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_items_shopper_id_fkey";
+            columns: ["shopper_id"];
+            isOneToOne: false;
+            referencedRelation: "shopper_profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      conversations: {
+        Row: {
+          id: string;
+          client_id: string;
+          shopper_id: string;
+          created_at: string;
+          last_message_at: string;
+        };
+        Insert: {
+          id?: string;
+          client_id: string;
+          shopper_id: string;
+          created_at?: string;
+          last_message_at?: string;
+        };
+        Update: {
+          id?: string;
+          client_id?: string;
+          shopper_id?: string;
+          created_at?: string;
+          last_message_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "conversations_client_id_fkey";
+            columns: ["client_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "conversations_shopper_id_fkey";
+            columns: ["shopper_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      briefs: {
+        Row: {
+          id: string;
+          conversation_id: string;
+          categorie: string;
+          budget_min: number | null;
+          budget_max: number | null;
+          description: string;
+          delai: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          conversation_id: string;
+          categorie: string;
+          budget_min?: number | null;
+          budget_max?: number | null;
+          description?: string;
+          delai?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          conversation_id?: string;
+          categorie?: string;
+          budget_min?: number | null;
+          budget_max?: number | null;
+          description?: string;
+          delai?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "briefs_conversation_id_fkey";
+            columns: ["conversation_id"];
+            isOneToOne: true;
+            referencedRelation: "conversations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      messages: {
+        Row: {
+          id: string;
+          conversation_id: string;
+          sender_id: string;
+          contenu: string;
+          read_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          conversation_id: string;
+          sender_id: string;
+          contenu: string;
+          read_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          conversation_id?: string;
+          sender_id?: string;
+          contenu?: string;
+          read_at?: string | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey";
+            columns: ["conversation_id"];
+            isOneToOne: false;
+            referencedRelation: "conversations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey";
+            columns: ["sender_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      reviews: {
+        Row: {
+          id: string;
+          shopper_id: string;
+          client_id: string;
+          note: number;
+          commentaire: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          shopper_id: string;
+          client_id: string;
+          note: number;
+          commentaire?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          shopper_id?: string;
+          client_id?: string;
+          note?: number;
+          commentaire?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "reviews_shopper_id_fkey";
+            columns: ["shopper_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "reviews_client_id_fkey";
+            columns: ["client_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
-    Views: Record<string, never>;
+    Views: Record<never, never>;
     Functions: {
-      current_profile_id: { Args: Record<string, never>; Returns: string };
+      current_profile_id: {
+        Args: Record<PropertyKey, never>;
+        Returns: string;
+      };
     };
     Enums: {
       user_role: UserRole;
       shopper_status: ShopperStatus;
       availability: Availability;
     };
+    CompositeTypes: Record<never, never>;
   };
 };
+
+/* Alias pratiques ---------------------------------------------------------- */
+type Tables = Database["public"]["Tables"];
+export type ProfileRow = Tables["profiles"]["Row"];
+export type ShopperProfileRow = Tables["shopper_profiles"]["Row"];
+export type PortfolioItemRow = Tables["portfolio_items"]["Row"];
+export type ConversationRow = Tables["conversations"]["Row"];
+export type BriefRow = Tables["briefs"]["Row"];
+export type MessageRow = Tables["messages"]["Row"];
+export type ReviewRow = Tables["reviews"]["Row"];
+
+export type { Json };
