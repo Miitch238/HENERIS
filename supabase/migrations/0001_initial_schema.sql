@@ -139,11 +139,15 @@ language plpgsql
 security definer
 set search_path = public
 as $$
+declare
+  wanted_role text := nullif(new.raw_user_meta_data ->> 'role', '');
 begin
   insert into public.profiles (user_id, role, prenom, nom)
   values (
     new.id,
-    coalesce((new.raw_user_meta_data ->> 'role')::public.user_role, 'client'),
+    case when wanted_role in ('client', 'shopper')
+         then wanted_role::public.user_role
+         else 'client' end,
     coalesce(new.raw_user_meta_data ->> 'prenom', ''),
     coalesce(new.raw_user_meta_data ->> 'nom', '')
   );

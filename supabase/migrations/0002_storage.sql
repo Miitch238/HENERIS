@@ -5,13 +5,23 @@
 --
 --  Convention de chemin : "<user_id>/<nom-fichier>" — le premier segment du
 --  path doit être l'UID de l'utilisateur connecté.
+--
+--  Ré-exécutable : les policies sont supprimées avant d'être recréées.
 -- ============================================================================
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values
   ('avatars',    'avatars',    true, 2 * 1024 * 1024, array['image/jpeg', 'image/png', 'image/webp']),
   ('portfolios', 'portfolios', true, 5 * 1024 * 1024, array['image/jpeg', 'image/png', 'image/webp'])
-on conflict (id) do nothing;
+on conflict (id) do update
+  set public             = excluded.public,
+      file_size_limit    = excluded.file_size_limit,
+      allowed_mime_types = excluded.allowed_mime_types;
+
+drop policy if exists "storage: lecture publique avatars & portfolios" on storage.objects;
+drop policy if exists "storage: écriture dans son dossier"             on storage.objects;
+drop policy if exists "storage: mise à jour de ses fichiers"           on storage.objects;
+drop policy if exists "storage: suppression de ses fichiers"           on storage.objects;
 
 -- Lecture publique des deux buckets.
 create policy "storage: lecture publique avatars & portfolios"
