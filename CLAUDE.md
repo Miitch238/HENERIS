@@ -53,7 +53,11 @@ détaillé dans le plan de cadrage ; migrations à venir dans `supabase/migratio
   ⚠ migration 0004 à appliquer. Pas de bandeau cookies : seul un cookie de session
   strictement nécessaire (info sur `/legal/cookies`). Reste **hors code** : mentions
   `[À COMPLÉTER]` des pages légales (infos société) + relecture juridique.
-- [~] **Étape 8** — Finitions & mise en ligne (manifest, métadonnées Twitter/keywords,
-  `.env.example` + README de déploiement, passe a11y : contrastes AA, anneau de focus
-  or profond, lien d'évitement, nav clavier). Reste : déploiement Vercel + domaine
-  (utilisateur), migrations `0003`/`0004`, activer confirmation e-mail.
+- [~] **Étape 8** — Finitions & mise en ligne. Fait : manifest, métadonnées
+  Twitter/keywords, favicon « H. », `.env.example` versionné + README de déploiement ;
+  passe a11y (contrastes AA, anneau de focus or profond, lien d'évitement, nav clavier,
+  `prefers-reduced-motion`) ; passe perfs (`next/image` via composant `Avatar` + portfolio,
+  `remotePatterns` Supabase) ; `/shoppers/[slug]` renvoie un vrai 404 ; `app/(app)/error.tsx` ;
+  OG image tolérante aux pannes de police. **Reste (utilisateur)** : déploiement Vercel +
+  domaine, migrations `0003`/`0004` dans Supabase, activer la confirmation d'e-mail,
+  nettoyer les comptes de test ; puis mentions `[À COMPLÉTER]` légales + relecture juridique.
