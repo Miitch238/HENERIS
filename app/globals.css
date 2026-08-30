@@ -129,4 +129,42 @@
     text-transform: uppercase;
     color: var(--color-gold-deep);
   }
+
+  /* Documents légaux : rythme de lecture */
+  .legal {
+    color: var(--color-ink-soft);
+    line-height: 1.7;
+  }
+  .legal h2 {
+    font-size: 1.15rem;
+    color: var(--color-ink);
+    margin: 2.25rem 0 0.75rem;
+  }
+  .legal h3 {
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    margin: 1.5rem 0 0.5rem;
+  }
+  .legal p + p {
+    margin-top: 0.9rem;
+  }
+  .legal ul {
+    margin: 0.75rem 0;
+    padding-left: 1.1rem;
+    list-style: disc;
+  }
+  .legal li {
+    margin: 0.35rem 0;
+  }
+  .legal a {
+    color: var(--color-gold-deep);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .legal strong {
+    color: var(--color-ink);
+    font-weight: 600;
+  }
 }
