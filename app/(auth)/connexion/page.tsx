@@ -1,32 +1,46 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
+import { redirect } from "next/navigation";
+import { getCurrentProfile } from "@/lib/queries/profile";
+import { SignInForm } from "@/components/auth/sign-in-form";
 
 export const metadata: Metadata = {
   title: "Se connecter",
   description: "Connectez-vous à votre compte Heneris.",
 };
 
-export default function ConnexionPage() {
+export default async function ConnexionPage() {
+  if (await getCurrentProfile()) redirect("/tableau-de-bord");
+
   return (
     <div>
       <p className="eyebrow">Votre compte</p>
       <h1 className="mt-4 text-3xl">Se connecter</h1>
-      <p className="mt-4 text-sm leading-relaxed text-ink-soft">
-        L&apos;authentification (e-mail + mot de passe, puis Google) est mise en
-        place à l&apos;étape 2 du plan.
-      </p>
-      <p className="mt-8 border border-hairline bg-surface px-4 py-3 font-mono text-xs uppercase tracking-[0.12em] text-ink-faint">
-        En cours de construction · Étape 2 · Auth
-      </p>
-      <p className="mt-8 text-sm text-ink-soft">
-        Pas encore de compte ?{" "}
+
+      <div className="mt-8">
+        <Suspense fallback={null}>
+          <SignInForm />
+        </Suspense>
+      </div>
+
+      <div className="mt-6 flex flex-col gap-1 text-sm text-ink-soft">
         <Link
-          href="/inscription"
+          href="/mot-de-passe-oublie"
           className="text-gold-deep underline underline-offset-4"
         >
-          S&apos;inscrire
+          Mot de passe oublié ?
         </Link>
-      </p>
+        <span>
+          Pas encore de compte ?{" "}
+          <Link
+            href="/inscription"
+            className="text-gold-deep underline underline-offset-4"
+          >
+            S&apos;inscrire
+          </Link>
+        </span>
+      </div>
     </div>
   );
 }

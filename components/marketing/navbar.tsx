@@ -15,7 +15,7 @@ const LINKS = [
   { href: "/devenir-shopper", label: "Devenir shopper" },
 ] as const;
 
-export function Navbar() {
+export function Navbar({ isAuthed = false }: { isAuthed?: boolean }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
@@ -53,12 +53,20 @@ export function Navbar() {
           </nav>
 
           <div className="hidden items-center gap-3 md:flex">
-            <Button href="/connexion" variant="ghost" size="sm">
-              Se connecter
-            </Button>
-            <Button href="/inscription" variant="primary" size="sm">
-              S&apos;inscrire
-            </Button>
+            {isAuthed ? (
+              <Button href="/tableau-de-bord" variant="primary" size="sm">
+                Mon espace
+              </Button>
+            ) : (
+              <>
+                <Button href="/connexion" variant="ghost" size="sm">
+                  Se connecter
+                </Button>
+                <Button href="/inscription" variant="primary" size="sm">
+                  S&apos;inscrire
+                </Button>
+              </>
+            )}
           </div>
 
           <button
@@ -93,22 +101,35 @@ export function Navbar() {
             ))}
           </nav>
           <div className="mt-auto grid gap-3 p-5">
-            <Button
-              href="/inscription"
-              variant="primary"
-              className="w-full"
-              onClick={close}
-            >
-              S&apos;inscrire
-            </Button>
-            <Button
-              href="/connexion"
-              variant="outline"
-              className="w-full"
-              onClick={close}
-            >
-              Se connecter
-            </Button>
+            {isAuthed ? (
+              <Button
+                href="/tableau-de-bord"
+                variant="primary"
+                className="w-full"
+                onClick={close}
+              >
+                Mon espace
+              </Button>
+            ) : (
+              <>
+                <Button
+                  href="/inscription"
+                  variant="primary"
+                  className="w-full"
+                  onClick={close}
+                >
+                  S&apos;inscrire
+                </Button>
+                <Button
+                  href="/connexion"
+                  variant="outline"
+                  className="w-full"
+                  onClick={close}
+                >
+                  Se connecter
+                </Button>
+              </>
+            )}
           </div>
         </div>
       )}

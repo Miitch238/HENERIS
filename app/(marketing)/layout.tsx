@@ -1,14 +1,17 @@
 import { Navbar } from "@/components/marketing/navbar";
 import { Footer } from "@/components/marketing/footer";
+import { getCurrentProfile } from "@/lib/queries/profile";
 
-export default function MarketingLayout({
+export default async function MarketingLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const profile = await getCurrentProfile();
+
   return (
     <>
-      <Navbar />
+      <Navbar isAuthed={profile !== null} />
       <main className="flex-1">{children}</main>
       <Footer />
     </>
