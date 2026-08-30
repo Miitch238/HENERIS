@@ -38,6 +38,34 @@ export function Input({ className, ...props }: React.ComponentProps<"input">) {
   );
 }
 
+export function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
+  return (
+    <textarea
+      className={cn(
+        "w-full border border-hairline bg-surface px-3 py-2 text-[0.95rem] leading-relaxed text-ink",
+        "outline-none transition-colors placeholder:text-ink-faint",
+        "focus-visible:border-gold-deep focus-visible:ring-2 focus-visible:ring-gold/25",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+export function Select({ className, ...props }: React.ComponentProps<"select">) {
+  return (
+    <select
+      className={cn(
+        "h-11 w-full border border-hairline bg-surface px-3 text-[0.95rem] text-ink",
+        "outline-none transition-colors",
+        "focus-visible:border-gold-deep focus-visible:ring-2 focus-visible:ring-gold/25",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
 export function FormError({ children }: { children?: string }) {
   if (!children) return null;
   return (

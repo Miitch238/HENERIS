@@ -286,6 +286,47 @@ export type Database = {
           },
         ];
       };
+      contact_messages: {
+        Row: {
+          id: string;
+          nom: string;
+          email: string;
+          sujet: string;
+          message: string;
+          auteur_id: string | null;
+          traite: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          nom: string;
+          email: string;
+          sujet: string;
+          message: string;
+          auteur_id?: string | null;
+          traite?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          nom?: string;
+          email?: string;
+          sujet?: string;
+          message?: string;
+          auteur_id?: string | null;
+          traite?: boolean;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "contact_messages_auteur_id_fkey";
+            columns: ["auteur_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       reviews: {
         Row: {
           id: string;
@@ -354,5 +395,6 @@ export type ConversationRow = Tables["conversations"]["Row"];
 export type BriefRow = Tables["briefs"]["Row"];
 export type MessageRow = Tables["messages"]["Row"];
 export type ReviewRow = Tables["reviews"]["Row"];
+export type ContactMessageRow = Tables["contact_messages"]["Row"];
 
 export type { Json };

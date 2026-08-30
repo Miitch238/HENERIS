@@ -47,5 +47,9 @@ détaillé dans le plan de cadrage ; migrations à venir dans `supabase/migratio
 - [x] **Étape 4** — Annuaire & recherche (/shoppers grille + filtres URL, chips spécialités, tri, pagination, états vide/chargement ; section « à la une » sur l'accueil).
 - [x] **Étape 5** — Messagerie temps réel (conversations, fil de messages, brief structuré, realtime Supabase, badge non-lu, read_at). ⚠ migration 0003 à appliquer.
 - [x] **Étape 6** — Tableaux de bord & avis (dashboard client avec conversations, avis client : dépôt/édition/suppression, note_moyenne auto, affichage + aggregateRating sur la fiche).
-- [ ] Étape 7 — Pages publiques & légales
+- [~] **Étape 7** — Pages publiques & légales (4 pages légales rédigées via `LegalDoc`,
+  `/comment-ca-marche` parcours client/shopper + FAQ, `/contact` → table `contact_messages`
+  lue au dashboard + anti-spam, `sitemap.ts` / `robots.ts` / `opengraph-image.tsx`).
+  ⚠ migration 0004 à appliquer. Reste : bandeau/encart cookies, mentions `[À COMPLÉTER]`
+  des pages légales (infos société) + relecture juridique.
 - [ ] Étape 8 — Finitions & mise en ligne
