@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getCurrentProfile } from "@/lib/queries/profile";
 import { getMyShopperProfile } from "@/lib/queries/shopper";
+import { listConversations } from "@/lib/queries/conversations";
 import { updateAvailability } from "@/lib/shopper/actions";
 import { Rating } from "@/components/shopper/rating";
 
@@ -29,8 +30,12 @@ export default async function TableauDeBordPage({
   if (!profile) return null;
 
   const isShopper = profile.role === "shopper";
-  const shopper = isShopper ? await getMyShopperProfile() : null;
+  const [shopper, conversations] = await Promise.all([
+    isShopper ? getMyShopperProfile() : Promise.resolve(null),
+    listConversations(),
+  ]);
   const { nouveau } = await searchParams;
+  const recent = conversations.slice(0, 4);
 
   return (
     <div className="max-w-2xl">
@@ -47,20 +52,56 @@ export default async function TableauDeBordPage({
       )}
 
       {!isShopper && (
-        <>
-          <p className="mt-4 text-ink-soft">
-            Retrouvez ici vos conversations avec les personal shoppers que vous
-            contactez.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3 text-sm">
+        <div className="mt-8 grid gap-8">
+          {recent.length > 0 ? (
+            <section>
+              <h2 className="text-lg">Conversations récentes</h2>
+              <ul className="mt-4 divide-y divide-hairline-soft border border-hairline bg-surface">
+                {recent.map((c) => (
+                  <li key={c.id}>
+                    <Link
+                      href={`/messages/${c.id}`}
+                      className="flex items-center justify-between gap-3 px-4 py-3 text-sm transition-colors hover:bg-sunk"
+                    >
+                      <span className="min-w-0">
+                        <span className="font-medium text-ink">
+                          {`${c.other.prenom} ${c.other.nom}`.trim() || "Conversation"}
+                        </span>
+                        <span className="block truncate text-ink-soft">
+                          {c.lastMessage ?? "Nouvelle conversation"}
+                        </span>
+                      </span>
+                      {c.unread > 0 && (
+                        <span className="grid size-5 shrink-0 place-items-center bg-gold text-[0.65rem] font-semibold text-ink">
+                          {c.unread}
+                        </span>
+                      )}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : (
+            <p className="text-ink-soft">
+              Retrouvez ici vos conversations avec les personal shoppers que vous
+              contactez.
+            </p>
+          )}
+
+          <div className="flex flex-wrap gap-3 text-sm">
             <Link
               href="/shoppers"
               className="border border-ink px-5 py-2.5 font-medium transition-colors hover:bg-ink hover:text-ground"
             >
               Parcourir les shoppers
             </Link>
+            {conversations.length > 4 && (
+              <Link href="/messages" className="px-5 py-2.5 font-medium text-gold-deep underline underline-offset-4">
+                Toutes les conversations
+              </Link>
+            )}
           </div>
-        </>
+        </div>
       )}
 
       {isShopper && !shopper && (

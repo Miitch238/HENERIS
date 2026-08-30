@@ -41,12 +41,20 @@ export default async function ConversationPage({
         <div className="min-w-0 flex-1">
           <p className="truncate text-[0.95rem] font-medium text-ink">{name}</p>
           {thread.role === "client" && thread.other.slug && (
-            <Link
-              href={`/shoppers/${thread.other.slug}`}
-              className="text-[0.75rem] text-gold-deep underline underline-offset-2"
-            >
-              Voir la fiche
-            </Link>
+            <span className="flex gap-3 text-[0.75rem]">
+              <Link
+                href={`/shoppers/${thread.other.slug}`}
+                className="text-gold-deep underline underline-offset-2"
+              >
+                Voir la fiche
+              </Link>
+              <Link
+                href={`/avis/nouveau?shopper=${thread.other.slug}`}
+                className="text-gold-deep underline underline-offset-2"
+              >
+                Laisser un avis
+              </Link>
+            </span>
           )}
         </div>
       </div>

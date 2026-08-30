@@ -46,6 +46,6 @@ détaillé dans le plan de cadrage ; migrations à venir dans `supabase/migratio
 - [x] **Étape 3** — Profils shoppers & portfolio (`/devenir-shopper`, `/profil` édition + portfolio, upload Storage, fiche publique `/shoppers/[slug]` + JSON-LD, génération de slug, dispo rapide au dashboard).
 - [x] **Étape 4** — Annuaire & recherche (/shoppers grille + filtres URL, chips spécialités, tri, pagination, états vide/chargement ; section « à la une » sur l'accueil).
 - [x] **Étape 5** — Messagerie temps réel (conversations, fil de messages, brief structuré, realtime Supabase, badge non-lu, read_at). ⚠ migration 0003 à appliquer.
-- [ ] Étape 6 — Tableaux de bord & avis
+- [x] **Étape 6** — Tableaux de bord & avis (dashboard client avec conversations, avis client : dépôt/édition/suppression, note_moyenne auto, affichage + aggregateRating sur la fiche).
 - [ ] Étape 7 — Pages publiques & légales
 - [ ] Étape 8 — Finitions & mise en ligne

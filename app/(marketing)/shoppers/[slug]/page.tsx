@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { Star } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { Rating } from "@/components/shopper/rating";
 import { getShopperBySlug } from "@/lib/queries/shopper";
 import { getCurrentProfile } from "@/lib/queries/profile";
+import { getReviewContext, getReviewsForShopper } from "@/lib/queries/reviews";
 import { publicUrl } from "@/lib/storage";
 
 const DISPO_LABEL: Record<string, string> = {
@@ -49,15 +51,22 @@ export async function generateMetadata({
 
 export default async function ShopperPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ avis?: string }>;
 }) {
   const { slug } = await params;
+  const { avis } = await searchParams;
   const result = await getShopperBySlug(slug);
   if (!result) notFound();
 
   const { shopper, isOwner } = result;
   const me = await getCurrentProfile();
+  const [reviews, reviewCtx] = await Promise.all([
+    getReviewsForShopper(shopper.profile_id),
+    getReviewContext(shopper.profile_id),
+  ]);
   const name = `${shopper.profile.prenom} ${shopper.profile.nom}`.trim() || "Personal shopper";
   const budget = budgetLabel(shopper.budget_min, shopper.budget_max);
   const avatar = shopper.profile.avatar_url;
@@ -80,6 +89,16 @@ export default async function ShopperPage({
         ? { "@type": "PostalAddress", addressLocality: shopper.profile.ville }
         : undefined,
       knowsAbout: [...shopper.specialites, ...shopper.styles],
+      ...(shopper.note_moyenne !== null && shopper.nb_avis > 0
+        ? {
+            aggregateRating: {
+              "@type": "AggregateRating",
+              ratingValue: shopper.note_moyenne,
+              reviewCount: shopper.nb_avis,
+              bestRating: 5,
+            },
+          }
+        : {}),
     },
   };
 
@@ -205,12 +224,61 @@ export default async function ShopperPage({
       )}
 
       <section className="py-10">
-        <h2 className="eyebrow">Avis</h2>
-        <p className="mt-4 text-[0.9rem] text-ink-soft">
-          {shopper.nb_avis > 0
-            ? "Les avis détaillés seront affichés ici."
-            : "Ce personal shopper n'a pas encore reçu d'avis."}
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="eyebrow">
+            Avis{shopper.nb_avis > 0 ? ` · ${shopper.nb_avis}` : ""}
+          </h2>
+          {reviewCtx.canReview && (
+            <Link
+              href={`/avis/nouveau?shopper=${slug}`}
+              className="text-[0.82rem] text-gold-deep underline underline-offset-4"
+            >
+              {reviewCtx.existing ? "Modifier mon avis" : "Laisser un avis"}
+            </Link>
+          )}
+        </div>
+
+        {avis === "merci" && (
+          <p className="mt-4 border-l-2 border-success bg-success/8 px-4 py-3 text-[0.88rem] text-success">
+            Merci, votre avis a été publié.
+          </p>
+        )}
+
+        {reviews.length === 0 ? (
+          <p className="mt-4 text-[0.9rem] text-ink-soft">
+            Ce personal shopper n&apos;a pas encore reçu d&apos;avis.
+          </p>
+        ) : (
+          <ul className="mt-6 grid gap-6">
+            {reviews.map((r) => (
+              <li key={r.id} className="border-b border-hairline-soft pb-6 last:border-0">
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex" aria-label={`${r.note} sur 5`}>
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <Star
+                        key={n}
+                        size={13}
+                        className={n <= r.note ? "fill-gold text-gold" : "text-hairline"}
+                      />
+                    ))}
+                  </span>
+                  <span className="text-[0.82rem] text-ink-soft">
+                    {r.author.prenom} {r.author.nom.charAt(0)}.
+                  </span>
+                  <span className="text-[0.75rem] text-ink-faint">
+                    {new Date(r.created_at).toLocaleDateString("fr-FR", {
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </span>
+                </div>
+                {r.commentaire && (
+                  <p className="mt-2 leading-relaxed text-ink-soft">{r.commentaire}</p>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </Container>
   );
