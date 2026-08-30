@@ -45,7 +45,7 @@ détaillé dans le plan de cadrage ; migrations à venir dans `supabase/migratio
 - [x] **Étape 2** — Base de données & auth (migrations SQL appliquées, `proxy.ts`, inscription/connexion/reset, groupe `(app)` protégé).
 - [x] **Étape 3** — Profils shoppers & portfolio (`/devenir-shopper`, `/profil` édition + portfolio, upload Storage, fiche publique `/shoppers/[slug]` + JSON-LD, génération de slug, dispo rapide au dashboard).
 - [x] **Étape 4** — Annuaire & recherche (/shoppers grille + filtres URL, chips spécialités, tri, pagination, états vide/chargement ; section « à la une » sur l'accueil).
-- [ ] Étape 5 — Messagerie temps réel
+- [x] **Étape 5** — Messagerie temps réel (conversations, fil de messages, brief structuré, realtime Supabase, badge non-lu, read_at). ⚠ migration 0003 à appliquer.
 - [ ] Étape 6 — Tableaux de bord & avis
 - [ ] Étape 7 — Pages publiques & légales
 - [ ] Étape 8 — Finitions & mise en ligne
