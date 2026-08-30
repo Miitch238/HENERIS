@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCurrentProfile } from "@/lib/queries/profile";
 import { getConversationThread } from "@/lib/queries/conversations";
+import { Avatar } from "@/components/ui/avatar";
 import { MessageThread } from "@/components/messaging/message-thread";
 import { BriefPanel } from "@/components/messaging/brief-panel";
 
@@ -29,15 +30,7 @@ export default async function ConversationPage({
         <Link href="/messages" className="text-[0.8rem] text-ink-faint hover:text-ink md:hidden">
           ←
         </Link>
-        {thread.other.avatar_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={thread.other.avatar_url} alt="" className="size-9 border border-hairline object-cover" />
-        ) : (
-          <span className="grid size-9 place-items-center border border-hairline bg-sunk font-serif text-[0.75rem] text-ink-faint">
-            {thread.other.prenom.charAt(0)}
-            {thread.other.nom.charAt(0)}
-          </span>
-        )}
+        <Avatar url={thread.other.avatar_url} name={name} px={36} />
         <div className="min-w-0 flex-1">
           <p className="truncate text-[0.95rem] font-medium text-ink">{name}</p>
           {thread.role === "client" && thread.other.slug && (

@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Star } from "lucide-react";
+import Image from "next/image";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
+import { Avatar } from "@/components/ui/avatar";
 import { Rating } from "@/components/shopper/rating";
 import { getShopperBySlug } from "@/lib/queries/shopper";
 import { getCurrentProfile } from "@/lib/queries/profile";
@@ -124,19 +126,7 @@ export default async function ShopperPage({
       </Link>
 
       <header className="mt-6 flex flex-col gap-6 border-b border-hairline pb-10 sm:flex-row sm:items-start">
-        {avatar ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={avatar}
-            alt={name}
-            className="size-28 shrink-0 border border-hairline object-cover"
-          />
-        ) : (
-          <div className="grid size-28 shrink-0 place-items-center border border-hairline bg-sunk font-serif text-3xl text-ink-faint">
-            {shopper.profile.prenom.charAt(0)}
-            {shopper.profile.nom.charAt(0)}
-          </div>
-        )}
+        <Avatar url={avatar} name={name} px={112} />
 
         <div className="flex-1">
           <p className="eyebrow">{DISPO_LABEL[shopper.disponibilite]}</p>
@@ -209,13 +199,16 @@ export default async function ShopperPage({
           <h2 className="eyebrow">Réalisations</h2>
           <ul className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
             {shopper.portfolio.map((item) => (
-              <li key={item.id}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+              <li
+                key={item.id}
+                className="relative aspect-square border border-hairline"
+              >
+                <Image
                   src={publicUrl("portfolios", item.image_path) ?? ""}
                   alt={item.legende || `Réalisation de ${name}`}
-                  loading="lazy"
-                  className="aspect-square w-full border border-hairline object-cover"
+                  fill
+                  sizes="(min-width: 640px) 33vw, 50vw"
+                  className="object-cover"
                 />
               </li>
             ))}

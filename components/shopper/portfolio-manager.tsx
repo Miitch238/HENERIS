@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import Image from "next/image";
 import type { PortfolioItemRow } from "@/types/database";
 import type { FormState } from "@/lib/shopper/actions";
 import { addPortfolioImages, removePortfolioItem } from "@/lib/shopper/actions";
@@ -18,12 +19,13 @@ export function PortfolioManager({ items }: { items: PortfolioItemRow[] }) {
       {items.length > 0 && (
         <ul className="grid grid-cols-3 gap-2 sm:grid-cols-4">
           {items.map((item) => (
-            <li key={item.id} className="relative">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+            <li key={item.id} className="relative aspect-square border border-hairline">
+              <Image
                 src={publicUrl("portfolios", item.image_path) ?? ""}
                 alt={item.legende || "Réalisation"}
-                className="aspect-square w-full border border-hairline object-cover"
+                fill
+                sizes="(min-width: 640px) 25vw, 33vw"
+                className="object-cover"
               />
               <form action={removePortfolioItem}>
                 <input type="hidden" name="id" value={item.id} />

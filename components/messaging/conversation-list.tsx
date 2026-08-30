@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { Avatar } from "@/components/ui/avatar";
 import type { ConversationSummary } from "@/lib/queries/conversations";
 import { cn } from "@/lib/utils";
 
@@ -66,15 +67,7 @@ export function ConversationList({
                 active && "bg-sunk",
               )}
             >
-              {c.other.avatar_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={c.other.avatar_url} alt="" className="size-10 shrink-0 border border-hairline object-cover" />
-              ) : (
-                <span className="grid size-10 shrink-0 place-items-center border border-hairline bg-surface font-serif text-[0.8rem] text-ink-faint">
-                  {c.other.prenom.charAt(0)}
-                  {c.other.nom.charAt(0)}
-                </span>
-              )}
+              <Avatar url={c.other.avatar_url} name={name} px={40} />
               <span className="min-w-0 flex-1">
                 <span className="flex items-baseline justify-between gap-2">
                   <span className="truncate text-[0.9rem] font-medium text-ink">{name}</span>

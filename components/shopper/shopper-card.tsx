@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Avatar } from "@/components/ui/avatar";
 import { Rating } from "@/components/shopper/rating";
 import type { ShopperCardData } from "@/lib/queries/shoppers-list";
 
@@ -25,19 +26,7 @@ export function ShopperCard({ shopper }: { shopper: ShopperCardData }) {
       className="group flex flex-col border border-hairline bg-surface transition-colors hover:border-ink-faint"
     >
       <div className="flex gap-4 p-5">
-        {shopper.profile.avatar_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={shopper.profile.avatar_url}
-            alt=""
-            className="size-16 shrink-0 border border-hairline object-cover"
-          />
-        ) : (
-          <div className="grid size-16 shrink-0 place-items-center border border-hairline bg-sunk font-serif text-lg text-ink-faint">
-            {shopper.profile.prenom.charAt(0)}
-            {shopper.profile.nom.charAt(0)}
-          </div>
-        )}
+        <Avatar url={shopper.profile.avatar_url} name={name} px={64} />
         <div className="min-w-0">
           <p className={`font-mono text-[0.65rem] uppercase tracking-[0.12em] ${dispo.className}`}>
             {dispo.label}

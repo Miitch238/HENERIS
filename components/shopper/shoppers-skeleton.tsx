@@ -1,15 +1,9 @@
-import { Container } from "@/components/ui/container";
-
-export default function LoadingShoppers() {
+/** Squelette de la grille de résultats de l'annuaire (pendant le chargement). */
+export function ShoppersSkeleton() {
   return (
-    <Container className="py-14 md:py-20">
-      <div className="max-w-2xl">
-        <div className="h-3 w-32 bg-sunk" />
-        <div className="mt-4 h-10 w-3/4 bg-sunk" />
-        <div className="mt-5 h-4 w-full bg-sunk" />
-      </div>
-      <div className="mt-10 h-14 w-full border border-hairline bg-surface" />
-      <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3" aria-hidden>
+    <div aria-hidden>
+      <div className="mt-6 h-3 w-40 bg-sunk" />
+      <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 6 }).map((_, i) => (
           <li key={i} className="border border-hairline bg-surface p-5">
             <div className="flex gap-4">
@@ -27,6 +21,6 @@ export default function LoadingShoppers() {
           </li>
         ))}
       </ul>
-    </Container>
+    </div>
   );
 }

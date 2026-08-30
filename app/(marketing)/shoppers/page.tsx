@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { ShopperCard } from "@/components/shopper/shopper-card";
 import { ShopperFilters } from "@/components/shopper/shopper-filters";
+import { ShoppersSkeleton } from "@/components/shopper/shoppers-skeleton";
 import {
   getShoppers,
   getSpecialiteOptions,
@@ -15,9 +17,10 @@ export const metadata: Metadata = {
     "Parcourez et filtrez les personal shoppers Heneris par budget, spécialité, style, disponibilité et note.",
 };
 
-type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+type SearchParamsObj = Record<string, string | string[] | undefined>;
+type SearchParams = Promise<SearchParamsObj>;
 
-function parseFilters(sp: Record<string, string | string[] | undefined>): Filters {
+function parseFilters(sp: SearchParamsObj): Filters {
   const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
   const tri = one(sp.tri);
   return {
@@ -38,22 +41,7 @@ function parseFilters(sp: Record<string, string | string[] | undefined>): Filter
 export default async function ShoppersPage({ searchParams }: { searchParams: SearchParams }) {
   const sp = await searchParams;
   const filters = parseFilters(sp);
-  const hasFilters = Boolean(
-    filters.q || filters.ville || filters.specialites?.length || filters.disponibilite || filters.budget || filters.noteMin,
-  );
-
-  const [{ shoppers, total, page, pageCount }, specialiteOptions] = await Promise.all([
-    getShoppers(filters),
-    getSpecialiteOptions(),
-  ]);
-
-  const buildPageHref = (p: number) => {
-    const next = new URLSearchParams();
-    for (const [k, v] of Object.entries(sp)) if (typeof v === "string" && k !== "page") next.set(k, v);
-    if (p > 1) next.set("page", String(p));
-    const qs = next.toString();
-    return qs ? `/shoppers?${qs}` : "/shoppers";
-  };
+  const specialiteOptions = await getSpecialiteOptions();
 
   return (
     <Container className="py-14 md:py-20">
@@ -70,6 +58,41 @@ export default async function ShoppersPage({ searchParams }: { searchParams: Sea
         <ShopperFilters specialiteOptions={specialiteOptions} />
       </div>
 
+      <Suspense key={JSON.stringify(filters)} fallback={<ShoppersSkeleton />}>
+        <ShopperResults filters={filters} sp={sp} />
+      </Suspense>
+    </Container>
+  );
+}
+
+async function ShopperResults({
+  filters,
+  sp,
+}: {
+  filters: Filters;
+  sp: SearchParamsObj;
+}) {
+  const { shoppers, total, page, pageCount } = await getShoppers(filters);
+  const hasFilters = Boolean(
+    filters.q ||
+      filters.ville ||
+      filters.specialites?.length ||
+      filters.disponibilite ||
+      filters.budget ||
+      filters.noteMin,
+  );
+
+  const buildPageHref = (p: number) => {
+    const next = new URLSearchParams();
+    for (const [k, v] of Object.entries(sp))
+      if (typeof v === "string" && k !== "page") next.set(k, v);
+    if (p > 1) next.set("page", String(p));
+    const qs = next.toString();
+    return qs ? `/shoppers?${qs}` : "/shoppers";
+  };
+
+  return (
+    <>
       <p className="mt-6 font-mono text-[0.75rem] uppercase tracking-[0.12em] text-ink-faint">
         {total} personal shopper{total > 1 ? "s" : ""}
         {hasFilters ? " correspondant à votre recherche" : ""}
@@ -119,9 +142,15 @@ export default async function ShoppersPage({ searchParams }: { searchParams: Sea
       )}
 
       {pageCount > 1 && (
-        <nav className="mt-12 flex items-center justify-center gap-2 text-[0.85rem]" aria-label="Pagination">
+        <nav
+          className="mt-12 flex items-center justify-center gap-2 text-[0.85rem]"
+          aria-label="Pagination"
+        >
           {page > 1 && (
-            <Link href={buildPageHref(page - 1)} className="border border-hairline px-3 py-2 hover:border-ink">
+            <Link
+              href={buildPageHref(page - 1)}
+              className="border border-hairline px-3 py-2 hover:border-ink"
+            >
               Précédent
             </Link>
           )}
@@ -129,12 +158,15 @@ export default async function ShoppersPage({ searchParams }: { searchParams: Sea
             Page {page} / {pageCount}
           </span>
           {page < pageCount && (
-            <Link href={buildPageHref(page + 1)} className="border border-hairline px-3 py-2 hover:border-ink">
+            <Link
+              href={buildPageHref(page + 1)}
+              className="border border-hairline px-3 py-2 hover:border-ink"
+            >
               Suivant
             </Link>
           )}
         </nav>
       )}
-    </Container>
+    </>
   );
 }
