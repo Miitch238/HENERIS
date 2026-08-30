@@ -42,7 +42,7 @@ détaillé dans le plan de cadrage ; migrations à venir dans `supabase/migratio
 ## Avancement (plan en 8 étapes)
 
 - [x] **Étape 1** — Fondations & design system (layout, nav, footer, landing, 404/erreur, clients Supabase)
-- [ ] Étape 2 — Base de données & authentification
+- [x] **Étape 2** — Base de données & auth (migrations SQL, `proxy.ts`, inscription/connexion/reset, groupe `(app)` protégé). ⚠ Le schéma `supabase/migrations/` doit être exécuté dans le SQL Editor Supabase.
 - [ ] Étape 3 — Profils shoppers & portfolio
 - [ ] Étape 4 — Annuaire & recherche
 - [ ] Étape 5 — Messagerie temps réel
