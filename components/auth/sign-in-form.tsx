@@ -11,14 +11,17 @@ const INITIAL: AuthState = {};
 export function SignInForm() {
   const params = useSearchParams();
   const suite = params.get("suite") ?? "";
-  const linkError = params.get("erreur") === "lien_invalide";
+  const erreur = params.get("erreur");
 
   const [state, formAction] = useActionState(signInAction, INITIAL);
 
   return (
     <form action={formAction} className="grid gap-5" noValidate>
-      {linkError ? (
+      {erreur === "lien_invalide" ? (
         <FormError>Ce lien est invalide ou a expiré. Connectez-vous à nouveau.</FormError>
+      ) : null}
+      {erreur === "oauth" ? (
+        <FormError>La connexion Google a échoué. Réessayez.</FormError>
       ) : null}
       <FormError>{state.error}</FormError>
       <FormNotice>{state.notice}</FormNotice>

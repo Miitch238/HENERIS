@@ -4,21 +4,31 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/lib/queries/profile";
 import { SignInForm } from "@/components/auth/sign-in-form";
+import { GoogleButton } from "@/components/auth/google-button";
+import { OrDivider } from "@/components/auth/or-divider";
 
 export const metadata: Metadata = {
   title: "Se connecter",
   description: "Connectez-vous à votre compte Heneris.",
 };
 
-export default async function ConnexionPage() {
+export default async function ConnexionPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ suite?: string }>;
+}) {
   if (await getCurrentProfile()) redirect("/tableau-de-bord");
+
+  const { suite = "" } = await searchParams;
 
   return (
     <div>
       <p className="eyebrow">Votre compte</p>
       <h1 className="mt-4 text-3xl">Se connecter</h1>
 
-      <div className="mt-8">
+      <div className="mt-8 grid gap-6">
+        <GoogleButton suite={suite} />
+        <OrDivider />
         <Suspense fallback={null}>
           <SignInForm />
         </Suspense>
