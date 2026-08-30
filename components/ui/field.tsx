@@ -1,5 +1,14 @@
 import { cn } from "@/lib/utils";
 
+/**
+ * Base commune aux champs. Le focus visible est géré globalement
+ * (:focus-visible dans globals.css) ; on garde juste le passage de la bordure
+ * en or profond comme affordance discrète.
+ */
+const fieldBase =
+  "w-full border border-hairline bg-surface px-3 text-[0.95rem] text-ink " +
+  "transition-colors placeholder:text-ink-faint focus-visible:border-gold-deep";
+
 export function Field({
   label,
   htmlFor,
@@ -25,45 +34,20 @@ export function Field({
 }
 
 export function Input({ className, ...props }: React.ComponentProps<"input">) {
-  return (
-    <input
-      className={cn(
-        "h-11 w-full border border-hairline bg-surface px-3 text-[0.95rem] text-ink",
-        "outline-none transition-colors placeholder:text-ink-faint",
-        "focus-visible:border-gold-deep focus-visible:ring-2 focus-visible:ring-gold/25",
-        className,
-      )}
-      {...props}
-    />
-  );
+  return <input className={cn(fieldBase, "h-11", className)} {...props} />;
 }
 
 export function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
   return (
     <textarea
-      className={cn(
-        "w-full border border-hairline bg-surface px-3 py-2 text-[0.95rem] leading-relaxed text-ink",
-        "outline-none transition-colors placeholder:text-ink-faint",
-        "focus-visible:border-gold-deep focus-visible:ring-2 focus-visible:ring-gold/25",
-        className,
-      )}
+      className={cn(fieldBase, "py-2 leading-relaxed", className)}
       {...props}
     />
   );
 }
 
 export function Select({ className, ...props }: React.ComponentProps<"select">) {
-  return (
-    <select
-      className={cn(
-        "h-11 w-full border border-hairline bg-surface px-3 text-[0.95rem] text-ink",
-        "outline-none transition-colors",
-        "focus-visible:border-gold-deep focus-visible:ring-2 focus-visible:ring-gold/25",
-        className,
-      )}
-      {...props}
-    />
-  );
+  return <select className={cn(fieldBase, "h-11", className)} {...props} />;
 }
 
 export function FormError({ children }: { children?: string }) {

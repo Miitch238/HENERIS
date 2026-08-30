@@ -63,7 +63,7 @@ export function ShopperProfileForm({
           rows={5}
           maxLength={1500}
           defaultValue={initial?.bio}
-          className="w-full border border-hairline bg-surface p-3 text-[0.95rem] text-ink outline-none transition-colors placeholder:text-ink-faint focus-visible:border-gold-deep focus-visible:ring-2 focus-visible:ring-gold/25"
+          className="w-full border border-hairline bg-surface p-3 text-[0.95rem] text-ink transition-colors placeholder:text-ink-faint focus-visible:border-gold-deep"
         />
       </Field>
 
@@ -111,7 +111,7 @@ export function ShopperProfileForm({
           id="disponibilite"
           name="disponibilite"
           defaultValue={initial?.disponibilite ?? "ouvert"}
-          className="h-11 w-full border border-hairline bg-surface px-3 text-[0.95rem] text-ink outline-none focus-visible:border-gold-deep"
+          className="h-11 w-full border border-hairline bg-surface px-3 text-[0.95rem] text-ink transition-colors focus-visible:border-gold-deep"
         >
           {DISPO.map((d) => (
             <option key={d.value} value={d.value}>

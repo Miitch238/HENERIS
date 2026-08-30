@@ -77,6 +77,12 @@ export default function RootLayout({
       className={`${playfair.variable} ${inter.variable} ${plexMono.variable} antialiased`}
     >
       <body className="flex min-h-dvh flex-col bg-ground text-ink">
+        <a
+          href="#contenu"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:bg-ink focus:px-4 focus:py-2 focus:text-[0.85rem] focus:text-ground"
+        >
+          Aller au contenu
+        </a>
         {children}
       </body>
     </html>

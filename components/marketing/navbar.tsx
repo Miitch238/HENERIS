@@ -19,12 +19,17 @@ export function Navbar({ isAuthed = false }: { isAuthed?: boolean }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
+  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
-  // Verrouille le scroll de la page quand le menu plein écran est ouvert
+  // Menu plein écran ouvert : verrouille le scroll et permet de fermer par Échap.
   useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
+    if (!open) return;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = "";
+      document.removeEventListener("keydown", onKey);
     };
   }, [open]);
 
@@ -42,9 +47,10 @@ export function Navbar({ isAuthed = false }: { isAuthed?: boolean }) {
               <Link
                 key={link.href}
                 href={link.href}
+                aria-current={isActive(link.href) ? "page" : undefined}
                 className={cn(
                   "text-[0.82rem] tracking-wide text-ink-soft transition-colors hover:text-ink",
-                  pathname.startsWith(link.href) && "text-ink",
+                  isActive(link.href) && "text-ink",
                 )}
               >
                 {link.label}
@@ -74,6 +80,7 @@ export function Navbar({ isAuthed = false }: { isAuthed?: boolean }) {
             className="-mr-2 inline-flex size-10 items-center justify-center text-ink md:hidden"
             aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
             aria-expanded={open}
+            aria-controls="menu-mobile"
             onClick={() => setOpen((v) => !v)}
           >
             {open ? <X size={20} /> : <Menu size={20} />}
@@ -84,7 +91,10 @@ export function Navbar({ isAuthed = false }: { isAuthed?: boolean }) {
       {/* Menu plein écran — hors du <header> pour ne pas hériter du
           containing-block créé par backdrop-filter. */}
       {open && (
-        <div className="fixed inset-x-0 top-16 bottom-0 z-40 flex flex-col bg-ground md:hidden">
+        <div
+          id="menu-mobile"
+          className="fixed inset-x-0 top-16 bottom-0 z-40 flex flex-col bg-ground md:hidden"
+        >
           <nav
             className="flex flex-col px-5 pt-4"
             aria-label="Navigation mobile"
@@ -94,6 +104,7 @@ export function Navbar({ isAuthed = false }: { isAuthed?: boolean }) {
                 key={link.href}
                 href={link.href}
                 onClick={close}
+                aria-current={isActive(link.href) ? "page" : undefined}
                 className="border-b border-hairline-soft py-5 font-serif text-2xl text-ink"
               >
                 {link.label}

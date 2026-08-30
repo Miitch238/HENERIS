@@ -14,7 +14,7 @@ export default async function AppLayout({
   return (
     <div className="flex min-h-dvh flex-col">
       <AppHeader profile={profile} />
-      <main className="flex-1 py-10 md:py-14">
+      <main id="contenu" tabIndex={-1} className="flex-1 py-10 md:py-14">
         <Container>{children}</Container>
       </main>
     </div>

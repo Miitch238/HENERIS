@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useRef, useState } from "react";
 import { Star } from "lucide-react";
 import { submitReview, type ReviewState } from "@/lib/reviews/actions";
 import { FormError } from "@/components/ui/field";
@@ -19,6 +19,15 @@ export function ReviewForm({
   const [note, setNote] = useState(defaultNote);
   const [hover, setHover] = useState(0);
   const [state, formAction] = useActionState(submitReview, {} as ReviewState);
+  const starRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  // Sélectionne une note et déplace le focus sur l'étoile correspondante
+  // (motif radiogroup : une seule étoile dans l'ordre de tabulation).
+  const pick = (n: number) => {
+    const v = Math.min(5, Math.max(1, n));
+    setNote(v);
+    starRefs.current[v - 1]?.focus();
+  };
 
   return (
     <form action={formAction} className="grid gap-5" noValidate>
@@ -33,16 +42,35 @@ export function ReviewForm({
           onMouseLeave={() => setHover(0)}
           role="radiogroup"
           aria-label="Note sur 5"
+          onKeyDown={(e) => {
+            if (e.key === "ArrowRight" || e.key === "ArrowUp") {
+              e.preventDefault();
+              pick((note || 0) + 1);
+            } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
+              e.preventDefault();
+              pick((note || 1) - 1);
+            } else if (e.key === "Home") {
+              e.preventDefault();
+              pick(1);
+            } else if (e.key === "End") {
+              e.preventDefault();
+              pick(5);
+            }
+          }}
         >
           {[1, 2, 3, 4, 5].map((n) => (
             <button
               key={n}
+              ref={(el) => {
+                starRefs.current[n - 1] = el;
+              }}
               type="button"
               role="radio"
               aria-checked={note === n}
               aria-label={`${n} sur 5`}
+              tabIndex={note === n || (note === 0 && n === 1) ? 0 : -1}
               onMouseEnter={() => setHover(n)}
-              onClick={() => setNote(n)}
+              onClick={() => pick(n)}
               className="p-0.5"
             >
               <Star
@@ -68,7 +96,7 @@ export function ReviewForm({
           maxLength={1500}
           defaultValue={defaultComment}
           placeholder="Comment s'est passé votre échange ?"
-          className="w-full border border-hairline bg-surface p-3 text-[0.95rem] text-ink outline-none focus-visible:border-gold-deep"
+          className="w-full border border-hairline bg-surface p-3 text-[0.95rem] text-ink transition-colors focus-visible:border-gold-deep"
         />
       </div>
 

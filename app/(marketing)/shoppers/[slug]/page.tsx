@@ -253,11 +253,16 @@ export default async function ShopperPage({
             {reviews.map((r) => (
               <li key={r.id} className="border-b border-hairline-soft pb-6 last:border-0">
                 <div className="flex items-center gap-3">
-                  <span className="inline-flex" aria-label={`${r.note} sur 5`}>
+                  <span
+                    className="inline-flex"
+                    role="img"
+                    aria-label={`${r.note} sur 5`}
+                  >
                     {[1, 2, 3, 4, 5].map((n) => (
                       <Star
                         key={n}
                         size={13}
+                        aria-hidden
                         className={n <= r.note ? "fill-gold text-gold" : "text-hairline"}
                       />
                     ))}

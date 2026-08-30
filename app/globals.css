@@ -12,10 +12,10 @@
   --surface: #ffffff; /* cartes, éléments surélevés */
   --sunk: #f3efe4; /* blocs en creux, code, champs */
 
-  /* Encre */
+  /* Encre — contrastes vérifiés AA (≥ 4.5:1) sur ground / surface / sunk */
   --ink: #17140e; /* titres, texte principal */
   --ink-soft: #5b5347; /* texte secondaire */
-  --ink-faint: #8c8474; /* légendes, méta */
+  --ink-faint: #6f6755; /* légendes, méta */
 
   /* Traits */
   --hairline: #e7e0ce; /* bordures */
@@ -23,11 +23,11 @@
 
   /* Or */
   --gold: #c9a84b; /* accent — exactement le point du logo */
-  --gold-deep: #8a6a14; /* or lisible en texte/lien sur ivoire (contraste AA) */
+  --gold-deep: #846513; /* or lisible en texte/lien/focus sur ivoire (AA) */
 
   /* Sémantique (distincte de l'accent) */
   --success: #3c7a54;
-  --warning: #a96b18;
+  --warning: #985e12;
   --danger: #9e3a30;
 
   /* Rayons & ombres — discrets, pas de rounded-lg partout */
@@ -80,6 +80,14 @@
     html {
       scroll-behavior: auto;
     }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 
   body {
@@ -115,8 +123,8 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-gold);
-    outline-offset: 3px;
+    outline: 3px solid var(--color-gold-deep);
+    outline-offset: 2px;
     border-radius: 2px;
   }
 

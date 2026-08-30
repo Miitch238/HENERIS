@@ -24,7 +24,7 @@ const TRI = [
 ];
 
 const selectClass =
-  "h-10 border border-hairline bg-surface px-2 text-[0.82rem] text-ink outline-none focus-visible:border-gold-deep";
+  "h-10 border border-hairline bg-surface px-2 text-[0.82rem] text-ink transition-colors focus-visible:border-gold-deep";
 
 export function ShopperFilters({ specialiteOptions }: { specialiteOptions: string[] }) {
   const router = useRouter();
@@ -100,7 +100,7 @@ export function ShopperFilters({ specialiteOptions }: { specialiteOptions: strin
           onKeyDown={(e) => {
             if (e.key === "Enter") push({ ville: (e.target as HTMLInputElement).value });
           }}
-          className="h-10 border border-hairline bg-surface px-2 text-[0.82rem] text-ink outline-none focus-visible:border-gold-deep"
+          className="h-10 border border-hairline bg-surface px-2 text-[0.82rem] text-ink transition-colors focus-visible:border-gold-deep"
           aria-label="Filtrer par ville"
         />
 

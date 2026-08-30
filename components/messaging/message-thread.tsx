@@ -143,13 +143,14 @@ export function MessageThread({
             rows={1}
             maxLength={4000}
             placeholder="Votre message…"
+            aria-label="Votre message"
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
                 formRef.current?.requestSubmit();
               }
             }}
-            className="max-h-40 min-h-11 flex-1 resize-none border border-hairline bg-surface px-3 py-2.5 text-[0.95rem] text-ink outline-none focus-visible:border-gold-deep"
+            className="max-h-40 min-h-11 flex-1 resize-none border border-hairline bg-surface px-3 py-2.5 text-[0.95rem] text-ink transition-colors focus-visible:border-gold-deep"
           />
           <SubmitButton className="h-11 w-auto px-5" pendingLabel="…">
             Envoyer

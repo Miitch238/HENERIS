@@ -20,7 +20,6 @@ export function SubmitButton({
       className={cn(
         "inline-flex h-12 w-full items-center justify-center bg-ink px-7 text-[0.85rem] font-medium tracking-wide text-ground",
         "transition-colors hover:bg-ink/90 disabled:opacity-60",
-        "focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-gold",
         className,
       )}
     >

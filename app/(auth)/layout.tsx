@@ -13,7 +13,11 @@ export default function AuthLayout({
           <Logo priority />
         </div>
       </header>
-      <main className="flex flex-1 items-start justify-center px-5 py-16 md:py-24">
+      <main
+        id="contenu"
+        tabIndex={-1}
+        className="flex flex-1 items-start justify-center px-5 py-16 md:py-24"
+      >
         <div className="w-full max-w-md">{children}</div>
       </main>
       <footer className="border-t border-hairline">

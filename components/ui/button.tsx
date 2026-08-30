@@ -4,10 +4,10 @@ import { cn } from "@/lib/utils";
 type Variant = "primary" | "outline" | "ghost" | "gold";
 type Size = "sm" | "md";
 
+// Le focus visible est géré globalement (:focus-visible dans globals.css).
 const base =
   "inline-flex items-center justify-center gap-2 font-medium tracking-wide " +
-  "transition-colors duration-200 disabled:pointer-events-none disabled:opacity-50 " +
-  "focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-gold";
+  "transition-colors duration-200 disabled:pointer-events-none disabled:opacity-50";
 
 const variants: Record<Variant, string> = {
   primary: "bg-ink text-ground hover:bg-ink/90",

@@ -12,7 +12,9 @@ export default async function MarketingLayout({
   return (
     <>
       <Navbar isAuthed={profile !== null} />
-      <main className="flex-1">{children}</main>
+      <main id="contenu" tabIndex={-1} className="flex-1">
+        {children}
+      </main>
       <Footer />
     </>
   );

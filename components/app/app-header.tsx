@@ -33,9 +33,15 @@ export async function AppHeader({ profile }: { profile: ProfileRow }) {
             >
               {l.label}
               {l.badge ? (
-                <span className="grid size-4 place-items-center bg-gold text-[0.6rem] font-semibold text-ink">
-                  {l.badge}
-                </span>
+                <>
+                  <span
+                    aria-hidden
+                    className="grid size-4 place-items-center bg-gold text-[0.6rem] font-semibold text-ink"
+                  >
+                    {l.badge}
+                  </span>
+                  <span className="sr-only">({l.badge} non lus)</span>
+                </>
               ) : null}
             </Link>
           ))}
@@ -59,7 +65,10 @@ export async function AppHeader({ profile }: { profile: ProfileRow }) {
         </div>
       </Container>
 
-      <Container className="flex gap-5 overflow-x-auto border-t border-hairline-soft py-2 md:hidden">
+      <nav
+        aria-label="Navigation de l'espace"
+        className="mx-auto flex w-full max-w-6xl gap-5 overflow-x-auto border-t border-hairline-soft px-5 py-2 sm:px-8 md:hidden lg:px-10"
+      >
         {links.map((l) => (
           <Link
             key={l.href}
@@ -68,13 +77,19 @@ export async function AppHeader({ profile }: { profile: ProfileRow }) {
           >
             {l.label}
             {l.badge ? (
-              <span className="grid size-4 place-items-center bg-gold text-[0.6rem] font-semibold text-ink">
-                {l.badge}
-              </span>
+              <>
+                <span
+                  aria-hidden
+                  className="grid size-4 place-items-center bg-gold text-[0.6rem] font-semibold text-ink"
+                >
+                  {l.badge}
+                </span>
+                <span className="sr-only">({l.badge} non lus)</span>
+              </>
             ) : null}
           </Link>
         ))}
-      </Container>
+      </nav>
     </header>
   );
 }

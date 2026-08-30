@@ -66,7 +66,7 @@ export function BriefPanel({
             name="description"
             rows={3}
             defaultValue={brief?.description}
-            className="w-full border border-hairline bg-surface p-2.5 text-[0.9rem] text-ink outline-none focus-visible:border-gold-deep"
+            className="w-full border border-hairline bg-surface p-2.5 text-[0.9rem] text-ink transition-colors focus-visible:border-gold-deep"
           />
         </Field>
         <div className="flex gap-2">

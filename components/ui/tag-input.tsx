@@ -33,7 +33,7 @@ export function TagInput({
     <div className="grid gap-1.5">
       <span className="text-[0.8rem] font-medium text-ink">{label}</span>
 
-      <div className="flex flex-wrap gap-1.5 border border-hairline bg-surface p-2">
+      <div className="flex flex-wrap gap-1.5 border border-hairline bg-surface p-2 focus-within:border-gold-deep">
         {tags.map((tag) => (
           <span
             key={tag}
@@ -63,6 +63,7 @@ export function TagInput({
               }
             }}
             onBlur={() => add(draft)}
+            aria-label={label}
             placeholder={tags.length === 0 ? placeholder : ""}
             className="min-w-[8rem] flex-1 bg-transparent px-1 py-1 text-[0.9rem] text-ink outline-none placeholder:text-ink-faint"
           />
