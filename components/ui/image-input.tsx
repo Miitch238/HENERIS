@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { ImagePlus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+type Item = { file: File; url: string };
+
 export function ImageInput({
   name,
   label,
@@ -21,47 +23,57 @@ export function ImageInput({
   currentUrl?: string | null;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [files, setFiles] = useState<File[]>([]);
-  const [previews, setPreviews] = useState<string[]>([]);
+  const [items, setItems] = useState<Item[]>([]);
 
-  // Reflète `files` dans le vrai <input type=file> pour la soumission du formulaire.
+  // Reflète la sélection dans le vrai <input type=file> pour la soumission.
   useEffect(() => {
     if (!inputRef.current) return;
     const dt = new DataTransfer();
-    files.forEach((f) => dt.items.add(f));
+    items.forEach((it) => dt.items.add(it.file));
     inputRef.current.files = dt.files;
-  }, [files]);
+  }, [items]);
 
-  // URLs d'aperçu (révoquées au démontage).
+  // Révoque toutes les object-URLs au démontage.
   useEffect(() => {
-    const urls = files.map((f) => URL.createObjectURL(f));
-    setPreviews(urls);
-    return () => urls.forEach((u) => URL.revokeObjectURL(u));
-  }, [files]);
+    return () => items.forEach((it) => URL.revokeObjectURL(it.url));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const onPick = (list: FileList | null) => {
+  const pick = (list: FileList | null) => {
     if (!list) return;
-    const incoming = Array.from(list).filter((f) => f.type.startsWith("image/"));
-    setFiles((prev) =>
-      multiple ? [...prev, ...incoming].slice(0, max) : incoming.slice(0, 1),
-    );
+    const incoming = Array.from(list)
+      .filter((f) => f.type.startsWith("image/"))
+      .map((file) => ({ file, url: URL.createObjectURL(file) }));
+    setItems((prev) => {
+      if (!multiple) {
+        prev.forEach((it) => URL.revokeObjectURL(it.url));
+        return incoming.slice(0, 1);
+      }
+      return [...prev, ...incoming].slice(0, max);
+    });
   };
 
-  const removeAt = (i: number) => setFiles((prev) => prev.filter((_, j) => j !== i));
+  const removeAt = (i: number) =>
+    setItems((prev) => {
+      URL.revokeObjectURL(prev[i]?.url);
+      return prev.filter((_, j) => j !== i);
+    });
+
+  const canAdd = multiple ? items.length < max : items.length === 0;
 
   return (
     <div className="grid gap-1.5">
       <span className="text-[0.8rem] font-medium text-ink">{label}</span>
 
       <div className="flex flex-wrap gap-2">
-        {currentUrl && previews.length === 0 && (
+        {currentUrl && items.length === 0 && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={currentUrl} alt="" className="size-20 border border-hairline object-cover" />
         )}
-        {previews.map((url, i) => (
-          <div key={url} className="relative">
+        {items.map((it, i) => (
+          <div key={it.url} className="relative">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={url} alt="" className="size-20 border border-hairline object-cover" />
+            <img src={it.url} alt="" className="size-20 border border-hairline object-cover" />
             <button
               type="button"
               onClick={() => removeAt(i)}
@@ -73,7 +85,7 @@ export function ImageInput({
           </div>
         ))}
 
-        {(multiple ? files.length < max : files.length === 0) && (
+        {canAdd && (
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
@@ -94,8 +106,8 @@ export function ImageInput({
         accept="image/jpeg,image/png,image/webp"
         multiple={multiple}
         onChange={(e) => {
-          onPick(e.target.files);
-          e.target.value = ""; // permet de re-choisir le même fichier
+          pick(e.target.files);
+          e.target.value = "";
         }}
         className="hidden"
       />
