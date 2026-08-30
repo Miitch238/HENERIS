@@ -36,7 +36,7 @@ export async function signUpAction(
   const { role, prenom, nom, email, password } = parsed.data;
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -51,6 +51,10 @@ export async function signUpAction(
     return { error: "Impossible de créer le compte. Réessayez." };
   }
 
+  // Confirmation d'e-mail désactivée → session immédiate.
+  if (data.session) redirect("/tableau-de-bord");
+
+  // Confirmation d'e-mail requise → pas de session tant que le lien n'est pas suivi.
   return {
     notice:
       "Compte créé. Vérifiez votre boîte mail et cliquez sur le lien de confirmation pour continuer.",
