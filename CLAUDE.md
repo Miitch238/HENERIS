@@ -1,0 +1,51 @@
+# Heneris — notes pour Claude
+
+Marketplace personal shoppers ↔ clients (tous budgets). Reconstruction complète
+en cours : l'ancienne app Create React App est archivée sur la branche
+`legacy-cra`, on repart de zéro sur `main`.
+
+## Stack
+
+Next.js 16 (App Router, RSC) · TypeScript strict · Tailwind CSS **v4** (config
+CSS-first dans `app/globals.css`, pas de `tailwind.config`) · Supabase
+(`@supabase/ssr`) · déploiement Vercel.
+
+## Conventions
+
+- **Server Components par défaut.** `"use client"` seulement pour l'interactivité.
+- **Mutations = Server Actions.** La clé Supabase ne fuit jamais côté client.
+- **Design system :** tokens dans `app/globals.css` (`--ink`, `--ground`, `--gold`
+  `#C9A84B`, …). Classes : `bg-ground`, `text-ink`, `text-gold-deep`,
+  `border-hairline`. Polices : `font-serif` (Playfair, titres), `font-sans`
+  (Inter, texte), `font-mono` (IBM Plex Mono, méta). Classe `.eyebrow` pour les
+  sur-titres.
+- **Site committé en clair** (pas de dark mode pour l'instant).
+- **FR uniquement.** Tout le texte visible est du vrai contenu français — jamais
+  de lorem.
+- **Chaque écran dynamique** a ses états vide / chargement / erreur.
+- Placeholders des pages non encore construites : `components/marketing/coming-soon.tsx`.
+
+## Modèle de données
+
+7 tables prévues (`profiles`, `shopper_profiles`, `portfolio_items`,
+`conversations`, `briefs`, `messages`, `reviews`), toutes en RLS. Points clés :
+`shopper_profiles.statut` (`en_revue` → validé à la main dans Supabase avant
+publication) ; `reviews` unique par couple `(client_id, shopper_id)`. Schéma
+détaillé dans le plan de cadrage ; migrations à venir dans `supabase/migrations/`.
+`supabase/_legacy-schema.sql` = ancien schéma, pour référence seulement.
+
+## Commandes
+
+`npm run dev` · `npm run build` · `npm run lint` · `npm run typecheck` ·
+`npm run check:supabase`
+
+## Avancement (plan en 8 étapes)
+
+- [x] **Étape 1** — Fondations & design system (layout, nav, footer, landing, 404/erreur, clients Supabase)
+- [ ] Étape 2 — Base de données & authentification
+- [ ] Étape 3 — Profils shoppers & portfolio
+- [ ] Étape 4 — Annuaire & recherche
+- [ ] Étape 5 — Messagerie temps réel
+- [ ] Étape 6 — Tableaux de bord & avis
+- [ ] Étape 7 — Pages publiques & légales
+- [ ] Étape 8 — Finitions & mise en ligne

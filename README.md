@@ -1,70 +1,78 @@
-# Getting Started with Create React App
+# Heneris
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Marketplace mettant en relation des **personal shoppers** avec des **clients**,
+quel que soit le budget. Recherche de profils, mise en relation, messagerie
+temps réel, avis.
 
-## Available Scripts
+**Stack :** Next.js 16 (App Router) · TypeScript · Tailwind CSS v4 · Supabase
+(Postgres + Auth + Realtime + Storage) · déploiement Vercel.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## Lancer en local
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Prérequis : **Node.js 20+**.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+```bash
+npm install
+cp .env.example .env.local   # puis renseigner les valeurs Supabase
+npm run dev
+```
 
-### `npm test`
+Le site tourne sur http://localhost:3000.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Variables d'environnement
 
-### `npm run build`
+| Variable | Où la trouver |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase → Project Settings → API → Project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Project Settings → API → `anon` `public` |
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+`.env.local` n'est jamais commité. Vérifier la connexion :
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+npm run check:supabase
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Scripts
 
-### `npm run eject`
+| Commande | Effet |
+|---|---|
+| `npm run dev` | serveur de développement |
+| `npm run build` | build de production |
+| `npm run start` | sert le build de production |
+| `npm run lint` | ESLint |
+| `npm run typecheck` | vérification TypeScript (`tsc --noEmit`) |
+| `npm run check:supabase` | teste la connexion à Supabase |
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Structure
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
+app/
+  (marketing)/   pages publiques (landing, comment-ça-marche, légal…) + Navbar/Footer
+  (auth)/        connexion, inscription
+  shoppers/      annuaire + fiches (à venir)
+components/
+  ui/            primitives (Button, Container, Logo)
+  marketing/     Navbar, Footer, Hero…
+lib/
+  supabase/      clients navigateur & serveur
+  utils.ts       helper cn()
+types/           types de la base (générés depuis Supabase)
+supabase/        migrations SQL + schéma de référence
+public/brand/    logo, favicon (voir public/brand/README.md)
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Déploiement (Vercel)
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+1. Importer le dépôt GitHub dans Vercel.
+2. Framework détecté automatiquement : **Next.js**.
+3. Renseigner les variables d'environnement (`NEXT_PUBLIC_SUPABASE_URL`,
+   `NEXT_PUBLIC_SUPABASE_ANON_KEY`) dans **Project Settings → Environment Variables**.
+4. Déployer. Brancher le domaine `heneris.com` dans **Settings → Domains**.
 
-## Learn More
+## Historique
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+L'ancienne version (Create React App) est archivée sur la branche
+[`legacy-cra`](../../tree/legacy-cra). La reconstruction repart de zéro — voir le
+plan de cadrage.
