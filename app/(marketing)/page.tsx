@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { MessagesSquare, ShieldCheck, Wallet } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
+import { ShopperCard } from "@/components/shopper/shopper-card";
+import { getFeaturedShoppers } from "@/lib/queries/shoppers-list";
 
 export const metadata: Metadata = {
   title: "Heneris — Trouvez votre personal shopper",
@@ -45,7 +48,9 @@ const REASSURANCE = [
   },
 ] as const;
 
-export default function HomePage() {
+export default async function HomePage() {
+  const featured = await getFeaturedShoppers(3);
+
   return (
     <>
       {/* ── Hero ──────────────────────────────────────────────── */}
@@ -73,6 +78,33 @@ export default function HomePage() {
           </p>
         </Container>
       </section>
+
+      {/* ── Shoppers à la une (masqué si < 3 profils actifs) ──── */}
+      {featured.length >= 3 && (
+        <section className="border-b border-hairline py-20 md:py-28">
+          <Container>
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <p className="eyebrow">Le réseau</p>
+                <h2 className="mt-4 text-3xl md:text-4xl">Quelques personal shoppers.</h2>
+              </div>
+              <Link
+                href="/shoppers"
+                className="text-[0.85rem] tracking-wide text-ink-soft underline underline-offset-4 hover:text-ink"
+              >
+                Voir tout l&apos;annuaire →
+              </Link>
+            </div>
+            <ul className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {featured.map((shopper) => (
+                <li key={shopper.slug} className="flex">
+                  <ShopperCard shopper={shopper} />
+                </li>
+              ))}
+            </ul>
+          </Container>
+        </section>
+      )}
 
       {/* ── Comment ça marche ─────────────────────────────────── */}
       <section className="py-20 md:py-28">
